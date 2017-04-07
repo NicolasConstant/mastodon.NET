@@ -49,10 +49,21 @@ namespace mastodon.Tests
             var tokenInfo = GetTokenInfo();
 
             var client = new MastodonClient(Settings.InstanceUrl);
-            var accounts = client.GetAccountFollowing(1, 4, tokenInfo.access_token);
+            var accounts = client.GetAccountFollowing(1, tokenInfo.access_token, 4);
 
             Assert.IsNotNull(accounts);
             Assert.AreEqual(4, accounts.Length);
+        }
+
+        [TestMethod]
+        public void GetAccountStatuses()
+        {
+            var tokenInfo = GetTokenInfo();
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var statuses1 = client.GetAccountStatuses(1, tokenInfo.access_token, 4);
+            var statuses2 = client.GetAccountStatuses(1, tokenInfo.access_token, 4, true);
+            var statuses3 = client.GetAccountStatuses(1, tokenInfo.access_token, 4, false, true);
         }
 
         private TokenInfo GetTokenInfo()

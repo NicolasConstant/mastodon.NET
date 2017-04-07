@@ -35,20 +35,27 @@ namespace mastodon
             return GetAuthenticatedData<Account[]>(route, accessToken, limit);
         }
 
-        public Account[] GetAccountFollowing(int accountId, int limit, string accessToken)
+        public Account[] GetAccountFollowing(int accountId, string accessToken, int limit = -1)
         {
             var route = string.Format(ApiRoutes.GetAccountFollowing, accountId);
             return GetAuthenticatedData<Account[]>(route, accessToken, limit);
         }
 
-        private T GetAuthenticatedData<T>(string route, string accessToken, int limit = -1)
+        public Statuses[] GetAccountStatuses(int accountId, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false)
+        {
+            var route = string.Format(ApiRoutes.GetAccountStatuses, accountId);
+            return GetAuthenticatedData<Statuses[]>(route, accessToken, limit, onlyMedia, excludeReplies);
+        }
+
+        private T GetAuthenticatedData<T>(string route, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false)
         {
             var client = new RestClient(_url);
             var request = new RestRequest(route, Method.GET);
             request.AddParameter("access_token", accessToken);
 
-            if (limit != -1)
-                request.AddParameter("limit", limit);
+            if (limit != -1) request.AddParameter("limit", limit);
+            if (onlyMedia) request.AddParameter("only_media", "true");
+            if (excludeReplies) request.AddParameter("exclude_replies", "true");
 
             var response = client.Execute(request);
             var content = response.Content;

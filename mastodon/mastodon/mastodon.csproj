@@ -56,6 +56,11 @@
     <Compile Include="MastodonClient.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AppInfo.cs" />
+    <Compile Include="Models\Application.cs" />
+    <Compile Include="Models\Attachment.cs" />
+    <Compile Include="Models\Mention.cs" />
+    <Compile Include="Models\Statuses.cs" />
+    <Compile Include="Models\Tags.cs" />
     <Compile Include="Models\TokenInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
