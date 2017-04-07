@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using mastodon.Consts;
 using mastodon.Enums;
+using mastodon.Models;
+using Newtonsoft.Json;
 using RestSharp;
 
 namespace mastodon
@@ -20,7 +22,7 @@ namespace mastodon
         }
         #endregion
 
-        public string CreateApp(string clientName, string redirectUris, AppScopesEnum scopes, string website)
+        public AppInfo CreateApp(string clientName, string redirectUris, AppScopesEnum scopes, string website)
         {
             var client = new RestClient(_url);
             var request = new RestRequest(ApiRoutes.CreateApp, Method.POST);
@@ -31,8 +33,8 @@ namespace mastodon
             request.AddHeader("Content-Type", "multipart/form-data");
 
             IRestResponse response = client.Execute(request);
-            var content = response.Content; // raw content as string
-            return content;
+            var content = response.Content;
+            return JsonConvert.DeserializeObject<AppInfo>(content);
         }
 
         private string GetScopes(AppScopesEnum scope)

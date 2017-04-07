@@ -52,6 +52,7 @@
     <Compile Include="Consts\ApiRoutes.cs" />
     <Compile Include="Consts\AppScopes.cs" />
     <Compile Include="Enums\AppScopesEnum.cs" />
+    <Compile Include="Models\AppInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
