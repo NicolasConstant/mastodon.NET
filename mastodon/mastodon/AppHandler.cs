@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using mastodon.Consts;
 using mastodon.Enums;
 using mastodon.Models;
@@ -32,7 +28,7 @@ namespace mastodon
             request.AddParameter("website", website);
             request.AddHeader("Content-Type", "multipart/form-data");
 
-            IRestResponse response = client.Execute(request);
+            var response = client.Execute(request);
             var content = response.Content;
             return JsonConvert.DeserializeObject<AppInfo>(content);
         }

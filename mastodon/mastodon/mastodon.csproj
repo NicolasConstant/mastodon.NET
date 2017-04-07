@@ -49,10 +49,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppHandler.cs" />
+    <Compile Include="AuthHandler.cs" />
     <Compile Include="Consts\ApiRoutes.cs" />
     <Compile Include="Consts\AppScopes.cs" />
     <Compile Include="Enums\AppScopesEnum.cs" />
     <Compile Include="Models\AppInfo.cs" />
+    <Compile Include="Models\TokenInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
