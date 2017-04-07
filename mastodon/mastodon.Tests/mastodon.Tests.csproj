@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="AppHandlerTests.cs" />
     <Compile Include="AuthHandlerTests.cs" />
+    <Compile Include="MastodonClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
   </ItemGroup>

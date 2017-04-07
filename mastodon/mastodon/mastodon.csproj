@@ -53,6 +53,8 @@
     <Compile Include="Consts\ApiRoutes.cs" />
     <Compile Include="Consts\AppScopes.cs" />
     <Compile Include="Enums\AppScopesEnum.cs" />
+    <Compile Include="MastodonClient.cs" />
+    <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AppInfo.cs" />
     <Compile Include="Models\TokenInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
