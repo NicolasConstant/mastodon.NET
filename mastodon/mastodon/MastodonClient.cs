@@ -18,13 +18,25 @@ namespace mastodon
 
         public Account GetAccount(int userId, string accessToken)
         {
+            var route = string.Format(ApiRoutes.GetAccount, userId);
+            return GetAuthenticatedData<Account>(route, accessToken);
+        }
+
+        public Account GetCurrentAccount(string accessToken)
+        {
+            var route = ApiRoutes.GetCurrentAccount;
+            return GetAuthenticatedData<Account>(route, accessToken);
+        }
+
+        private T GetAuthenticatedData<T>(string route, string accessToken)
+        {
             var client = new RestClient(_url);
-            var request = new RestRequest(string.Format(ApiRoutes.GetAccount, userId), Method.GET);
+            var request = new RestRequest(route, Method.GET);
             request.AddParameter("access_token", accessToken);
 
             var response = client.Execute(request);
             var content = response.Content;
-            return JsonConvert.DeserializeObject<Account>(content);
+            return JsonConvert.DeserializeObject<T>(content);
         }
     }
 }
