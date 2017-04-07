@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using mastodon.Consts;
 using mastodon.Models;
 using Newtonsoft.Json;
@@ -17,6 +18,7 @@ namespace mastodon
         }
         #endregion
 
+        #region Account
         public Account GetAccount(int accountId, string accessToken)
         {
             var route = string.Format(ApiRoutes.GetAccount, accountId);
@@ -40,14 +42,41 @@ namespace mastodon
             var route = string.Format(ApiRoutes.GetAccountFollowing, accountId);
             return GetAuthenticatedData<Account[]>(route, accessToken, limit);
         }
+        #endregion
 
+        #region Statuses
         public Statuses[] GetAccountStatuses(int accountId, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false)
         {
             var route = string.Format(ApiRoutes.GetAccountStatuses, accountId);
             return GetAuthenticatedData<Statuses[]>(route, accessToken, limit, onlyMedia, excludeReplies);
         }
+        #endregion
 
-        private T GetAuthenticatedData<T>(string route, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false)
+        #region Notifications
+
+        #endregion
+
+        #region Timelines
+        public Statuses[] GetHomeTimeline(string accessToken)
+        {
+            var route = ApiRoutes.GetHomeTimeline;
+            return GetAuthenticatedData<Statuses[]>(route, accessToken);
+        }
+
+        public Statuses[] GetPublicTimeline(string accessToken, bool local = false)
+        {
+            var route = ApiRoutes.GetPublicTimeline;
+            return GetAuthenticatedData<Statuses[]>(route, accessToken, -1, false, false, local);
+        }
+
+        public Statuses[] GetHastagTimeline(string hashtag, string accessToken, bool local = false)
+        {
+            var route = string.Format(ApiRoutes.GetHastagTimeline, hashtag);
+            return GetAuthenticatedData<Statuses[]>(route, accessToken, -1, false, false, local);
+        }
+        #endregion
+
+        private T GetAuthenticatedData<T>(string route, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false, bool local = false)
         {
             var client = new RestClient(_url);
             var request = new RestRequest(route, Method.GET);
@@ -56,6 +85,7 @@ namespace mastodon
             if (limit != -1) request.AddParameter("limit", limit);
             if (onlyMedia) request.AddParameter("only_media", "true");
             if (excludeReplies) request.AddParameter("exclude_replies", "true");
+            if (local) request.AddParameter("local", "true");
 
             var response = client.Execute(request);
             var content = response.Content;

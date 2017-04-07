@@ -66,6 +66,35 @@ namespace mastodon.Tests
             var statuses3 = client.GetAccountStatuses(1, tokenInfo.access_token, 4, false, true);
         }
 
+        [TestMethod]
+        public void GetHomeTimeline()
+        {
+            var tokenInfo = GetTokenInfo();
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var timeline = client.GetHomeTimeline(tokenInfo.access_token);
+        }
+
+        [TestMethod]
+        public void GetPublicTimeline()
+        {
+            var tokenInfo = GetTokenInfo();
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var timeline1 = client.GetPublicTimeline(tokenInfo.access_token);
+            var timeline2 = client.GetPublicTimeline(tokenInfo.access_token, true);
+        }
+
+        [TestMethod]
+        public void GetHastagTimeline()
+        {
+            var tokenInfo = GetTokenInfo();
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var timeline1 = client.GetHastagTimeline("mastodon", tokenInfo.access_token);
+            var timeline2 = client.GetHastagTimeline("mastodon", tokenInfo.access_token, true);
+        }
+
         private TokenInfo GetTokenInfo()
         {
             var authHandler = new AuthHandler(Settings.InstanceUrl);
