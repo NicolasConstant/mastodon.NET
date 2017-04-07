@@ -42,6 +42,19 @@ namespace mastodon.Tests
             Assert.AreEqual(4, accounts.Length);
         }
 
+
+        [TestMethod]
+        public void GetAccountFollowing()
+        {
+            var tokenInfo = GetTokenInfo();
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var accounts = client.GetAccountFollowing(1, 4, tokenInfo.access_token);
+
+            Assert.IsNotNull(accounts);
+            Assert.AreEqual(4, accounts.Length);
+        }
+
         private TokenInfo GetTokenInfo()
         {
             var authHandler = new AuthHandler(Settings.InstanceUrl);

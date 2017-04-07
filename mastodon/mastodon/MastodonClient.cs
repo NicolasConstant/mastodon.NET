@@ -35,6 +35,12 @@ namespace mastodon
             return GetAuthenticatedData<Account[]>(route, accessToken, limit);
         }
 
+        public Account[] GetAccountFollowing(int accountId, int limit, string accessToken)
+        {
+            var route = string.Format(ApiRoutes.GetAccountFollowing, accountId);
+            return GetAuthenticatedData<Account[]>(route, accessToken, limit);
+        }
+
         private T GetAuthenticatedData<T>(string route, string accessToken, int limit = -1)
         {
             var client = new RestClient(_url);

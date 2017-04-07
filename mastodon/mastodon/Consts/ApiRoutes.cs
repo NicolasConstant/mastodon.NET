@@ -7,5 +7,6 @@
         public static string GetAccount = "/api/v1/accounts/{0}";
         public static string GetCurrentAccount = "/api/v1/accounts/verify_credentials";
         public static string GetAccountFollowers = "/api/v1/accounts/{0}/followers";
+        public static string GetAccountFollowing = "/api/v1/accounts/{0}/following";
     }
 }
