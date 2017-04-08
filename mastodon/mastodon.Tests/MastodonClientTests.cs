@@ -1,4 +1,5 @@
-﻿using mastodon.Models;
+﻿using System.Linq;
+using mastodon.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace mastodon.Tests
@@ -68,6 +69,17 @@ namespace mastodon.Tests
             Assert.AreEqual(4, statuses1.Length);
             Assert.AreEqual(4, statuses2.Length);
             Assert.AreEqual(4, statuses3.Length);
+        }
+
+        [TestMethod]
+        public void GetAccountRelationships()
+        {
+            var tokenInfo = GetTokenInfo();
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var relationships = client.GetAccountRelationships(1, tokenInfo.access_token); //TODO pass a array Ids
+            Assert.IsNotNull(relationships);
+            Assert.IsTrue(relationships.First().id != default(int));
         }
 
         [TestMethod]

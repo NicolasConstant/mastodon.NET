@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using mastodon.Consts;
 using mastodon.Models;
 using Newtonsoft.Json;
@@ -41,6 +42,12 @@ namespace mastodon
         {
             var route = string.Format(ApiRoutes.GetAccountFollowing, accountId);
             return GetAuthenticatedData<Account[]>(route, accessToken, limit);
+        }
+
+        public Relationships[] GetAccountRelationships(int accountId, string accessToken)
+        {
+            var route = ApiRoutes.GetAccountRelationships;
+            return GetAuthenticatedData<Relationships[]>(route, accessToken, -1, false, false, false, accountId);
         }
         #endregion
 
@@ -114,7 +121,7 @@ namespace mastodon
         }
         #endregion
 
-        private T GetAuthenticatedData<T>(string route, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false, bool local = false)
+        private T GetAuthenticatedData<T>(string route, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false, bool local = false, int id = -1)
         {
             var client = new RestClient(_url);
             var request = new RestRequest(route, Method.GET);
@@ -124,6 +131,7 @@ namespace mastodon
             if (onlyMedia) request.AddParameter("only_media", "true");
             if (excludeReplies) request.AddParameter("exclude_replies", "true");
             if (local) request.AddParameter("local", "true");
+            if (id != -1) request.AddParameter("id", id);
 
             var response = client.Execute(request);
             var content = response.Content;

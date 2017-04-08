@@ -59,6 +59,7 @@
     <Compile Include="Models\Application.cs" />
     <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\Mention.cs" />
+    <Compile Include="Models\Relationships.cs" />
     <Compile Include="Models\Statuses.cs" />
     <Compile Include="Models\Tags.cs" />
     <Compile Include="Models\TokenInfo.cs" />
