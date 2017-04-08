@@ -170,6 +170,19 @@ namespace mastodon.Tests
             var unmutedAccount = client.Unmute(2, tokenInfo.access_token);
             Assert.IsNotNull(unmutedAccount);
         }
+        
+        [TestMethod]
+        public void SearchAccount()
+        {
+            var q = "ale";
+            var tokenInfo = GetTokenInfo();
+            
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var accounts = client.SearchAccounts(q, tokenInfo.access_token);
+            Assert.IsNotNull(accounts);
+            Assert.AreEqual(40, accounts.Length);
+            Assert.IsTrue(accounts.First().username.Contains(q));
+        }
 
         private TokenInfo GetTokenInfo()
         {

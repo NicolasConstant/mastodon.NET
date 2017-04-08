@@ -121,7 +121,15 @@ namespace mastodon
         }
         #endregion
 
-        private T GetAuthenticatedData<T>(string route, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false, bool local = false, int id = -1)
+        #region Search
+        public Account[] SearchAccounts(string query, string accessToken, int limit = 40)
+        {
+            var route = ApiRoutes.SearchForAccounts;
+            return GetAuthenticatedData<Account[]>(route, accessToken, limit, false, false, false, -1, query);
+        }
+        #endregion
+
+        private T GetAuthenticatedData<T>(string route, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false, bool local = false, int id = -1, string query = null)
         {
             var client = new RestClient(_url);
             var request = new RestRequest(route, Method.GET);
@@ -132,6 +140,7 @@ namespace mastodon
             if (excludeReplies) request.AddParameter("exclude_replies", "true");
             if (local) request.AddParameter("local", "true");
             if (id != -1) request.AddParameter("id", id);
+            if (!string.IsNullOrEmpty(query)) request.AddParameter("q", query);
 
             var response = client.Execute(request);
             var content = response.Content;
