@@ -64,6 +64,10 @@ namespace mastodon.Tests
             var statuses1 = client.GetAccountStatuses(1, tokenInfo.access_token, 4);
             var statuses2 = client.GetAccountStatuses(1, tokenInfo.access_token, 4, true);
             var statuses3 = client.GetAccountStatuses(1, tokenInfo.access_token, 4, false, true);
+
+            Assert.AreEqual(4, statuses1.Length);
+            Assert.AreEqual(4, statuses2.Length);
+            Assert.AreEqual(4, statuses3.Length);
         }
 
         [TestMethod]
@@ -93,6 +97,66 @@ namespace mastodon.Tests
             var client = new MastodonClient(Settings.InstanceUrl);
             var timeline1 = client.GetHastagTimeline("mastodon", tokenInfo.access_token);
             var timeline2 = client.GetHastagTimeline("mastodon", tokenInfo.access_token, true);
+        }
+
+        [TestMethod]
+        public void Follow()
+        {
+            var tokenInfo = GetTokenInfo();
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var followedAccount = client.Follow(1, tokenInfo.access_token);
+            Assert.IsNotNull(followedAccount);
+        }
+
+        [TestMethod]
+        public void Unfollow()
+        {
+            var tokenInfo = GetTokenInfo();
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var unfollowedAccount = client.Unfollow(1, tokenInfo.access_token);
+            Assert.IsNotNull(unfollowedAccount);
+        }
+
+        [TestMethod]
+        public void Block()
+        {
+            var tokenInfo = GetTokenInfo();
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var blockedAccount = client.Block(2, tokenInfo.access_token);
+            Assert.IsNotNull(blockedAccount);
+        }
+
+        [TestMethod]
+        public void Unblock()
+        {
+            var tokenInfo = GetTokenInfo();
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var unblockedAccount = client.Unblock(2, tokenInfo.access_token);
+            Assert.IsNotNull(unblockedAccount);
+        }
+
+        [TestMethod]
+        public void Mute()
+        {
+            var tokenInfo = GetTokenInfo();
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var mutedAccount = client.Mute(2, tokenInfo.access_token);
+            Assert.IsNotNull(mutedAccount);
+        }
+
+        [TestMethod]
+        public void Unmuted()
+        {
+            var tokenInfo = GetTokenInfo();
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var unmutedAccount = client.Unmute(2, tokenInfo.access_token);
+            Assert.IsNotNull(unmutedAccount);
         }
 
         private TokenInfo GetTokenInfo()

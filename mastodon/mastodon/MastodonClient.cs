@@ -18,7 +18,7 @@ namespace mastodon
         }
         #endregion
 
-        #region Account
+        #region Account Infos
         public Account GetAccount(int accountId, string accessToken)
         {
             var route = string.Format(ApiRoutes.GetAccount, accountId);
@@ -49,6 +49,44 @@ namespace mastodon
         {
             var route = string.Format(ApiRoutes.GetAccountStatuses, accountId);
             return GetAuthenticatedData<Statuses[]>(route, accessToken, limit, onlyMedia, excludeReplies);
+        }
+        #endregion
+
+        #region Actions
+        public Account Follow(int accountId, string accessToken)
+        {
+            var route = string.Format(ApiRoutes.Follow, accountId);
+            return GetAuthenticatedData<Account>(route, accessToken);
+        }
+
+        public Account Unfollow(int accountId, string accessToken)
+        {
+            var route = string.Format(ApiRoutes.Unfollow, accountId);
+            return GetAuthenticatedData<Account>(route, accessToken);
+        }
+
+        public Account Block(int accountId, string accessToken)
+        {
+            var route = string.Format(ApiRoutes.Block, accountId);
+            return GetAuthenticatedData<Account>(route, accessToken);
+        }
+
+        public Account Unblock(int accountId, string accessToken)
+        {
+            var route = string.Format(ApiRoutes.Unblock, accountId);
+            return GetAuthenticatedData<Account>(route, accessToken);
+        }
+
+        public Account Mute(int accountId, string accessToken)
+        {
+            var route = string.Format(ApiRoutes.Mute, accountId);
+            return GetAuthenticatedData<Account>(route, accessToken);
+        }
+
+        public Account Unmute(int accountId, string accessToken)
+        {
+            var route = string.Format(ApiRoutes.Unmute, accountId);
+            return GetAuthenticatedData<Account>(route, accessToken);
         }
         #endregion
 
