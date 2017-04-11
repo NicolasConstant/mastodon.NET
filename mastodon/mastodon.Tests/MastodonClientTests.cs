@@ -92,6 +92,16 @@ namespace mastodon.Tests
         }
 
         [TestMethod]
+        public void GetFollowRequests()
+        {
+            var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var followRequests = client.GetFollowRequests(tokenInfo.access_token);
+            Assert.IsNotNull(followRequests);
+        }
+
+        [TestMethod]
         public void GetHomeTimeline()
         {
             var tokenInfo = GetTokenInfo(AppScopeEnum.Read);

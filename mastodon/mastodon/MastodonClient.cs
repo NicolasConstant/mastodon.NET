@@ -49,13 +49,11 @@ namespace mastodon
             var route = ApiRoutes.GetAccountRelationships;
             return GetAuthenticatedData<Relationships[]>(Method.GET, route, accessToken, -1, false, false, false, accountId);
         }
-        #endregion
 
-        #region Statuses
-        public Statuses[] GetAccountStatuses(int accountId, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false)
+        public Account[] GetFollowRequests(string accessToken)
         {
-            var route = string.Format(ApiRoutes.GetAccountStatuses, accountId);
-            return GetAuthenticatedData<Statuses[]>(Method.GET, route, accessToken, limit, onlyMedia, excludeReplies);
+            var route = ApiRoutes.GetFollowRequests;
+            return GetAuthenticatedData<Account[]>(Method.GET, route, accessToken);
         }
         #endregion
 
@@ -108,6 +106,12 @@ namespace mastodon
         #endregion
 
         #region Timelines
+        public Statuses[] GetAccountStatuses(int accountId, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false)
+        {
+            var route = string.Format(ApiRoutes.GetAccountStatuses, accountId);
+            return GetAuthenticatedData<Statuses[]>(Method.GET, route, accessToken, limit, onlyMedia, excludeReplies);
+        }
+
         public Statuses[] GetHomeTimeline(string accessToken)
         {
             var route = ApiRoutes.GetHomeTimeline;
