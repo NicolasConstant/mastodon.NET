@@ -152,6 +152,17 @@ namespace mastodon.Tests
         }
 
         [TestMethod]
+        public void FollowRemote()
+        {
+            var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var followedAccount = client.FollowRemote("@Gargron@mastodon.social", tokenInfo.access_token);
+            Assert.IsNotNull(followedAccount);
+            Assert.AreEqual("Eugen", followedAccount.display_name);
+        }
+
+        [TestMethod]
         public void Unfollow()
         {
             var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);

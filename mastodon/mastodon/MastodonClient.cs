@@ -84,6 +84,12 @@ namespace mastodon
             return GetAuthenticatedData<Relationships>(Method.POST, route, accessToken);
         }
 
+        public Account FollowRemote(string uri, string accessToken)
+        {
+            var route = ApiRoutes.FollowRemote;
+            return GetAuthenticatedData<Account>(Method.POST, route, accessToken, -1, false, false, false, -1, null, uri);
+        }
+
         public Relationships Block(int accountId, string accessToken)
         {
             var route = string.Format(ApiRoutes.Block, accountId);
@@ -159,7 +165,7 @@ namespace mastodon
         }
         #endregion
 
-        private T GetAuthenticatedData<T>(Method methodType, string route, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false, bool local = false, int id = -1, string query = null)
+        private T GetAuthenticatedData<T>(Method methodType, string route, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false, bool local = false, int id = -1, string query = null, string uri = null)
         {
             var client = new RestClient(_url);
             var request = new RestRequest(route, methodType);
@@ -171,6 +177,7 @@ namespace mastodon
             if (local) request.AddParameter("local", "true");
             if (id != -1) request.AddParameter("id", id);
             if (!string.IsNullOrEmpty(query)) request.AddParameter("q", query);
+            if (!string.IsNullOrEmpty(uri)) request.AddParameter("uri", uri);
 
             var response = client.Execute(request);
             var content = response.Content;
