@@ -1,5 +1,7 @@
 ﻿using mastodon.Consts;
+using mastodon.Enums;
 using mastodon.Models;
+using mastodon.Tools;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -16,7 +18,7 @@ namespace mastodon
         }
         #endregion
 
-        public TokenInfo GetTokenInfo(string clientId, string clientSecret, string userLogin, string userPassword)
+        public TokenInfo GetTokenInfo(string clientId, string clientSecret, string userLogin, string userPassword, AppScopeEnum scope)
         {
             var client = new RestClient(_url);
             var request = new RestRequest(ApiRoutes.GetToken, Method.POST);
@@ -25,6 +27,7 @@ namespace mastodon
             request.AddParameter("grant_type", "password");
             request.AddParameter("username", userLogin);
             request.AddParameter("password", userPassword);
+            request.AddParameter("scope", AppScopesConverter.GetScopes(scope));
             request.AddHeader("Content-Type", "multipart/form-data");
 
             var response = client.Execute(request);
