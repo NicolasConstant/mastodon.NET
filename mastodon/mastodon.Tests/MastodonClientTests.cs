@@ -128,6 +128,7 @@ namespace mastodon.Tests
             var client = new MastodonClient(Settings.InstanceUrl);
             var followedAccount = client.Follow(1, tokenInfo.access_token);
             Assert.IsNotNull(followedAccount);
+            Assert.IsTrue(followedAccount.following);
         }
 
         [TestMethod]
@@ -138,6 +139,7 @@ namespace mastodon.Tests
             var client = new MastodonClient(Settings.InstanceUrl);
             var unfollowedAccount = client.Unfollow(1, tokenInfo.access_token);
             Assert.IsNotNull(unfollowedAccount);
+            Assert.IsFalse(unfollowedAccount.following);
         }
 
         [TestMethod]
@@ -146,8 +148,9 @@ namespace mastodon.Tests
             var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
 
             var client = new MastodonClient(Settings.InstanceUrl);
-            var blockedAccount = client.Block(2, tokenInfo.access_token);
+            var blockedAccount = client.Block(10, tokenInfo.access_token);
             Assert.IsNotNull(blockedAccount);
+            Assert.IsTrue(blockedAccount.blocking);
         }
 
         [TestMethod]
@@ -156,8 +159,9 @@ namespace mastodon.Tests
             var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
 
             var client = new MastodonClient(Settings.InstanceUrl);
-            var unblockedAccount = client.Unblock(2, tokenInfo.access_token);
+            var unblockedAccount = client.Unblock(1, tokenInfo.access_token);
             Assert.IsNotNull(unblockedAccount);
+            Assert.IsFalse(unblockedAccount.blocking);
         }
 
         [TestMethod]
@@ -168,6 +172,7 @@ namespace mastodon.Tests
             var client = new MastodonClient(Settings.InstanceUrl);
             var mutedAccount = client.Mute(2, tokenInfo.access_token);
             Assert.IsNotNull(mutedAccount);
+            Assert.IsTrue(mutedAccount.muting);
         }
 
         [TestMethod]
@@ -178,8 +183,9 @@ namespace mastodon.Tests
             var client = new MastodonClient(Settings.InstanceUrl);
             var unmutedAccount = client.Unmute(2, tokenInfo.access_token);
             Assert.IsNotNull(unmutedAccount);
+            Assert.IsFalse(unmutedAccount.muting);
         }
-        
+
         [TestMethod]
         public void SearchAccount()
         {
