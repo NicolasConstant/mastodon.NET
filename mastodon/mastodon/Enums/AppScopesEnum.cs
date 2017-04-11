@@ -1,9 +1,12 @@
-﻿namespace mastodon.Enums
+﻿using System;
+
+namespace mastodon.Enums
 {
-    public enum AppScopesEnum
+    [Flags]
+    public enum AppScopeEnum
     {
-        Read,
-        Write,
-        Follow
+        Read = 1,
+        Write = 2,
+        Follow = 4
     }
 }

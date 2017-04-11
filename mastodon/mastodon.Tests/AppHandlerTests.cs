@@ -11,7 +11,7 @@ namespace mastodon.Tests
         public void CreateApp()
         {
             var appHandler = new AppHandler(Settings.InstanceUrl);
-            var appData = appHandler.CreateApp("MyAppName", "urn:ietf:wg:oauth:2.0:oob", AppScopesEnum.Write, "https://github.com/NicolasConstant/mastodon.NET");
+            var appData = appHandler.CreateApp("MyAppName", "urn:ietf:wg:oauth:2.0:oob", AppScopeEnum.Write, "https://github.com/NicolasConstant/mastodon.NET");
         }
     }
 }

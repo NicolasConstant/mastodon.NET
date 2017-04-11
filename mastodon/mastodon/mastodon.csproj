@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppHandler.cs" />
+    <Compile Include="Tools\AppScopesConverter.cs" />
     <Compile Include="AuthHandler.cs" />
     <Compile Include="Consts\ApiRoutes.cs" />
     <Compile Include="Consts\AppScopes.cs" />
