@@ -125,6 +125,12 @@ namespace mastodon
             var route = string.Format(ApiRoutes.GetHastagTimeline, hashtag);
             return GetAuthenticatedData<Statuses[]>(Method.GET, route, accessToken, -1, false, false, local);
         }
+
+        public Statuses[] GetFavorites(string accessToken)
+        {
+            var route = string.Format(ApiRoutes.GetFavourites);
+            return GetAuthenticatedData<Statuses[]>(Method.GET, route, accessToken);
+        }
         #endregion
 
         #region Search

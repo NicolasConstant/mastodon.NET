@@ -121,6 +121,16 @@ namespace mastodon.Tests
         }
 
         [TestMethod]
+        public void GetFavorites()
+        {
+            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var favs = client.GetFavorites(tokenInfo.access_token);
+            Assert.IsNotNull(favs);
+        }
+
+        [TestMethod]
         public void Follow()
         {
             var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
