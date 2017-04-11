@@ -196,7 +196,7 @@ namespace mastodon.Tests
             var accounts = client.SearchAccounts(q, tokenInfo.access_token);
             Assert.IsNotNull(accounts);
             Assert.AreEqual(40, accounts.Length);
-            Assert.IsTrue(accounts.First().username.Contains(q));
+            Assert.IsTrue(accounts.First().username.Contains(q) || accounts.First().display_name.Contains(q));
         }
 
         private TokenInfo GetTokenInfo(AppScopeEnum scope)

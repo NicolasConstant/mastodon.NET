@@ -133,7 +133,7 @@ namespace mastodon
         {
             var client = new RestClient(_url);
             var request = new RestRequest(route, methodType);
-            request.AddParameter("access_token", accessToken);
+            request.AddParameter("Authorization", string.Format("Bearer " + accessToken), ParameterType.HttpHeader);
 
             if (limit != -1) request.AddParameter("limit", limit);
             if (onlyMedia) request.AddParameter("only_media", "true");
