@@ -55,6 +55,20 @@ namespace mastodon
             var route = ApiRoutes.GetFollowRequests;
             return GetAuthenticatedData<Account[]>(Method.GET, route, accessToken);
         }
+
+        //TODO test this
+        public void AuthorizeFollowRequest(int id, string accessToken)
+        {
+            var route = ApiRoutes.AuthorizeFollowRequest;
+            GetAuthenticatedData<object>(Method.POST, route, accessToken, -1, false, false, false, id);
+        }
+
+        //TODO test this
+        public void RejectFollowRequest(int id, string accessToken)
+        {
+            var route = ApiRoutes.RejectFollowRequest;
+            GetAuthenticatedData<object>(Method.POST, route, accessToken, -1, false, false, false, id);
+        }
         #endregion
 
         #region Actions
