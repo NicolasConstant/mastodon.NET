@@ -159,9 +159,19 @@ namespace mastodon.Tests
             var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
 
             var client = new MastodonClient(Settings.InstanceUrl);
-            var unblockedAccount = client.Unblock(1, tokenInfo.access_token);
+            var unblockedAccount = client.Unblock(10, tokenInfo.access_token);
             Assert.IsNotNull(unblockedAccount);
             Assert.IsFalse(unblockedAccount.blocking);
+        }
+
+        [TestMethod]
+        public void GetBlocks()
+        {
+            var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var blocks = client.GetBlocks(tokenInfo.access_token);
+            Assert.IsNotNull(blocks);
         }
 
         [TestMethod]

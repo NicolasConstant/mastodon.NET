@@ -84,6 +84,12 @@ namespace mastodon
             return GetAuthenticatedData<Relationships>(Method.POST, route, accessToken);
         }
 
+        public Account[] GetBlocks(string accessToken)
+        {
+            var route = string.Format(ApiRoutes.GetBlocks);
+            return GetAuthenticatedData<Account[]>(Method.GET, route, accessToken);
+        }
+
         public Relationships Mute(int accountId, string accessToken)
         {
             var route = string.Format(ApiRoutes.Mute, accountId);
