@@ -217,6 +217,18 @@ namespace mastodon.Tests
         }
 
         [TestMethod]
+        public void GetMutes()
+        {
+            Mute(); //Make sure an account is muted
+            var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var mutedAccounts = client.GetMutes(tokenInfo.access_token);
+            Assert.IsNotNull(mutedAccounts);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(mutedAccounts.First().username));
+        }
+
+        [TestMethod]
         public void Unmuted()
         {
             var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
@@ -247,6 +259,37 @@ namespace mastodon.Tests
             var instance = client.GetInstance();
             Assert.IsNotNull(instance);
             Assert.IsFalse(string.IsNullOrWhiteSpace(instance.uri));
+        }
+
+        [TestMethod]
+        public void GetNotifications()
+        {
+            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var notifications = client.GetNotifications(tokenInfo.access_token);
+            Assert.IsNotNull(notifications);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(notifications.First().type));
+        }
+
+        [TestMethod]
+        public void GetSingleNotifications()
+        {
+            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var notification = client.GetSingleNotifications(tokenInfo.access_token, 114760);
+            Assert.IsNotNull(notification);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(notification.type));
+        }
+
+        [TestMethod]
+        public void ClearNotification()
+        {
+            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            client.ClearNotifications(tokenInfo.access_token);
         }
 
         private TokenInfo GetTokenInfo(AppScopeEnum scope)

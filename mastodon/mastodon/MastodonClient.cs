@@ -114,6 +114,12 @@ namespace mastodon
             return GetAuthenticatedData<Relationships>(Method.POST, route, accessToken);
         }
 
+        public Account[] GetMutes(string accessToken)
+        {
+            var route = string.Format(ApiRoutes.GetMutes);
+            return GetAuthenticatedData<Account[]>(Method.GET, route, accessToken);
+        }
+
         public Relationships Unmute(int accountId, string accessToken)
         {
             var route = string.Format(ApiRoutes.Unmute, accountId);
@@ -122,7 +128,23 @@ namespace mastodon
         #endregion
 
         #region Notifications
+        public Notification[] GetNotifications(string accessToken)
+        {
+            var route = ApiRoutes.GetNotifications;
+            return GetAuthenticatedData<Notification[]>(Method.GET, route, accessToken);
+        }
 
+        public Notification GetSingleNotifications(string accessToken, int id)
+        {
+            var route = string.Format(ApiRoutes.GetSingleNotifications, id);
+            return GetAuthenticatedData<Notification>(Method.GET, route, accessToken);
+        }
+
+        public void ClearNotifications(string accessToken)
+        {
+            var route = ApiRoutes.ClearNotifications;
+            GetAuthenticatedData<object>(Method.POST, route, accessToken);
+        }
         #endregion
 
         #region Timelines
