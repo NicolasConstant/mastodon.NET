@@ -240,6 +240,15 @@ namespace mastodon.Tests
             Assert.IsTrue(accounts.First().username.Contains(q) || accounts.First().display_name.Contains(q));
         }
 
+        [TestMethod]
+        public void GetInstance()
+        {
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var instance = client.GetInstance();
+            Assert.IsNotNull(instance);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(instance.uri));
+        }
+
         private TokenInfo GetTokenInfo(AppScopeEnum scope)
         {
             var authHandler = new AuthHandler(Settings.InstanceUrl);

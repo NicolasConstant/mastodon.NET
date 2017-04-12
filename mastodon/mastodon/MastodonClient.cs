@@ -165,11 +165,19 @@ namespace mastodon
         }
         #endregion
 
+        public Instance GetInstance()
+        {
+            var route = ApiRoutes.GetInstance;
+            return GetAuthenticatedData<Instance>(Method.GET, route, string.Empty);
+        }
+
         private T GetAuthenticatedData<T>(Method methodType, string route, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false, bool local = false, int id = -1, string query = null, string uri = null)
         {
             var client = new RestClient(_url);
             var request = new RestRequest(route, methodType);
-            request.AddParameter("Authorization", string.Format("Bearer " + accessToken), ParameterType.HttpHeader);
+
+            if(!string.IsNullOrEmpty(accessToken))
+                request.AddParameter("Authorization", string.Format("Bearer " + accessToken), ParameterType.HttpHeader);
 
             if (limit != -1) request.AddParameter("limit", limit);
             if (onlyMedia) request.AddParameter("only_media", "true");
