@@ -12,7 +12,7 @@ var scopes = AppScopeEnum.Read | AppScopeEnum.Write | AppScopeEnum.Follow;
 var appData = appHandler.CreateApp("MyAppName", "RedirectUri", scopes, "WebsiteUri");
 ```
 
- See [scope definition](https://github.com/tootsuite/documentation/blob/master/Using-the-API/OAuth-details.md).
+ See [scope definition](https://github.com/tootsuite/documentation/blob/master/Using-the-API/OAuth-details.md)
 
  Retrieve OAuth Token
 ```csharp
