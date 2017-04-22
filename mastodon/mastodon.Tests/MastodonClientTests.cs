@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Configuration;
+using System.Linq;
 using System.Net;
 using mastodon.Enums;
 using mastodon.Models;
@@ -128,6 +129,18 @@ namespace mastodon.Tests
             var client = new MastodonClient(Settings.InstanceUrl);
             var timeline1 = client.GetHastagTimeline("mastodon", tokenInfo.access_token);
             var timeline2 = client.GetHastagTimeline("mastodon", tokenInfo.access_token, true);
+        }
+
+        [TestMethod]
+        public void PostNewStatus()
+        {
+            var tokenInfo = GetTokenInfo(AppScopeEnum.Write);
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            var status = client.PostNewStatus(tokenInfo.access_token, "Cool status for testing purpose");
+            Assert.IsNotNull(status.content);
+            status = client.PostNewStatus(tokenInfo.access_token, "Cool status for testing purpose", -1, null, true, "TESTING SPOILER", StatusVisibilityEnum.Private);
+            Assert.IsNotNull(status.content);
         }
 
         [TestMethod]
