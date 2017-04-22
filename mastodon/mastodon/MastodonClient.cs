@@ -335,9 +335,15 @@ namespace mastodon
             return GetAuthenticatedData<Status>(param);
         }
 
-        public void DeleteStatus()
+        public void DeleteStatus(string accessToken, int statusId)
         {
-            throw new NotImplementedException();
+            var param = new RestParameters()
+            {
+                Type = Method.DELETE,
+                Route = string.Format(ApiRoutes.DeleteStatus, statusId),
+                AccessToken = accessToken,
+            };
+            GetAuthenticatedData<object>(param);
         }
 
         public void ReblogStatus()

@@ -132,15 +132,25 @@ namespace mastodon.Tests
         }
 
         [TestMethod]
-        public void PostNewStatus()
+        public Status PostNewStatus()
         {
             var tokenInfo = GetTokenInfo(AppScopeEnum.Write);
 
             var client = new MastodonClient(Settings.InstanceUrl);
-            var status = client.PostNewStatus(tokenInfo.access_token, "Cool status for testing purpose");
+            var status = client.PostNewStatus(tokenInfo.access_token, "Cool status for testing purpose", -1, null, true, "TESTING SPOILER", StatusVisibilityEnum.Private);
             Assert.IsNotNull(status.content);
-            status = client.PostNewStatus(tokenInfo.access_token, "Cool status for testing purpose", -1, null, true, "TESTING SPOILER", StatusVisibilityEnum.Private);
-            Assert.IsNotNull(status.content);
+            return status;
+        }
+
+        [TestMethod]
+        public void DeleteStatus()
+        {
+            var status = PostNewStatus();
+
+            var tokenInfo = GetTokenInfo(AppScopeEnum.Write);
+
+            var client = new MastodonClient(Settings.InstanceUrl);
+            client.DeleteStatus(tokenInfo.access_token, status.id);
         }
 
         [TestMethod]
