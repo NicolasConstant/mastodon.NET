@@ -2,7 +2,7 @@
 // ReSharper disable InconsistentNaming
 namespace mastodon.Models
 {
-    public class Statuses
+    public class Status
     {
         public int id { get; set; }
         public DateTime created_at { get; set; }
@@ -21,7 +21,7 @@ namespace mastodon.Models
         public string url { get; set; }
         public int reblogs_count { get; set; }
         public int favourites_count { get; set; }
-        public Statuses reblog { get; set; }
+        public Status reblog { get; set; }
         public bool? favourited { get; set; }
         public bool? reblogged { get; set; }
     }

@@ -49,6 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppHandler.cs" />
+    <Compile Include="Consts\StatusVisibility.cs" />
+    <Compile Include="Enums\StatusVisibilityEnum.cs" />
     <Compile Include="Models\Instance.cs" />
     <Compile Include="Models\Notification.cs" />
     <Compile Include="Tools\AppScopesConverter.cs" />
@@ -63,10 +65,11 @@
     <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\Mention.cs" />
     <Compile Include="Models\Relationships.cs" />
-    <Compile Include="Models\Statuses.cs" />
+    <Compile Include="Models\Status.cs" />
     <Compile Include="Models\Tags.cs" />
     <Compile Include="Models\TokenInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tools\StatusVisibilityConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

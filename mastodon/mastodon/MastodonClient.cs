@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using mastodon.Consts;
+using mastodon.Enums;
 using mastodon.Models;
+using mastodon.Tools;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -254,7 +258,7 @@ namespace mastodon
         #endregion
 
         #region Timelines
-        public Statuses[] GetAccountStatuses(int accountId, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false)
+        public Status[] GetAccountStatuses(int accountId, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false)
         {
             var param = new RestParameters()
             {
@@ -265,10 +269,10 @@ namespace mastodon
                 OnlyMedia = onlyMedia,
                 ExcludeReplies = excludeReplies
             };
-            return GetAuthenticatedData<Statuses[]>(param);
+            return GetAuthenticatedData<Status[]>(param);
         }
 
-        public Statuses[] GetHomeTimeline(string accessToken)
+        public Status[] GetHomeTimeline(string accessToken)
         {
             var param = new RestParameters()
             {
@@ -276,10 +280,10 @@ namespace mastodon
                 Route = ApiRoutes.GetHomeTimeline,
                 AccessToken = accessToken,
             };
-            return GetAuthenticatedData<Statuses[]>(param);
+            return GetAuthenticatedData<Status[]>(param);
         }
 
-        public Statuses[] GetPublicTimeline(string accessToken, bool local = false)
+        public Status[] GetPublicTimeline(string accessToken, bool local = false)
         {
             var param = new RestParameters()
             {
@@ -288,10 +292,10 @@ namespace mastodon
                 AccessToken = accessToken,
                 Local = local
             };
-            return GetAuthenticatedData<Statuses[]>(param);
+            return GetAuthenticatedData<Status[]>(param);
         }
 
-        public Statuses[] GetHastagTimeline(string hashtag, string accessToken, bool local = false)
+        public Status[] GetHastagTimeline(string hashtag, string accessToken, bool local = false)
         {
             var param = new RestParameters()
             {
@@ -300,10 +304,10 @@ namespace mastodon
                 AccessToken = accessToken,
                 Local = local
             };
-            return GetAuthenticatedData<Statuses[]>(param);
+            return GetAuthenticatedData<Status[]>(param);
         }
 
-        public Statuses[] GetFavorites(string accessToken)
+        public Status[] GetFavorites(string accessToken)
         {
             var param = new RestParameters()
             {
@@ -311,7 +315,49 @@ namespace mastodon
                 Route = string.Format(ApiRoutes.GetFavourites),
                 AccessToken = accessToken,
             };
-            return GetAuthenticatedData<Statuses[]>(param);
+            return GetAuthenticatedData<Status[]>(param);
+        }
+
+        public Status PostNewStatus(string accessToken, string status, int inReplyToId = -1, int[] mediaIds = null, bool sensitive = false, string spoilerText = null, StatusVisibilityEnum visibility = StatusVisibilityEnum.Public)
+        {
+            var param = new RestParameters()
+            {
+                Type = Method.POST, 
+                Route = ApiRoutes.PostNewStatus,
+                AccessToken = accessToken,
+                Status = status,
+                InReplyToId = inReplyToId, 
+                MediaIds = mediaIds,
+                Sensitive = sensitive,
+                SpoilerText = spoilerText,
+                Visibility = visibility
+            };
+            return GetAuthenticatedData<Status>(param);
+        }
+
+        public void DeleteStatus()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ReblogStatus()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UnreblogStatus()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FavouritingStatus()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UnfavouritingStatus()
+        {
+            throw new NotImplementedException();
         }
         #endregion
 
@@ -347,6 +393,7 @@ namespace mastodon
 
             if(param.HasAccessToken) request.AddParameter("Authorization", string.Format("Bearer " + param.AccessToken), ParameterType.HttpHeader);
 
+            //TODO move params names to dedicated struct
             if (param.HasLimit) request.AddParameter("limit", param.Limit);
             if (param.OnlyMedia) request.AddParameter("only_media", "true");
             if (param.ExcludeReplies) request.AddParameter("exclude_replies", "true");
@@ -354,6 +401,12 @@ namespace mastodon
             if (param.HasId) request.AddParameter("id", param.Id);
             if (param.HasQuery) request.AddParameter("q", param.Query);
             if (param.HasUri) request.AddParameter("uri", param.Uri);
+            if (param.HasStatus) request.AddParameter("status", param.Status);
+            if (param.HasInReplyToId) request.AddParameter("in_reply_to_id", param.InReplyToId);
+            if (param.HasMediaIds) request.AddParameter("media_ids", param.MediaIds); //TODO Format this correctly
+            if (param.Sensitive) request.AddParameter("sensitive", "true");
+            if (param.HasSpoilerText) request.AddParameter("spoiler_text", param.SpoilerText);
+            if (param.HasVisibility) request.AddParameter("visibility", StatusVisibilityConverter.GetVisibility(param.Visibility));
 
             var response = client.Execute(request);
             var content = response.Content;
@@ -383,6 +436,23 @@ namespace mastodon
             
             public string Uri { get; set; }
             public bool HasUri { get { return !string.IsNullOrWhiteSpace(Uri); } }
+
+            public string Status { get; set; }
+            public bool HasStatus { get { return !string.IsNullOrWhiteSpace(Status);  } }
+
+            public int InReplyToId { get; set; } = -1;
+            public bool HasInReplyToId { get { return InReplyToId != -1; } }
+
+            public int[] MediaIds { get; set; }
+            public bool HasMediaIds { get { return MediaIds != null && MediaIds.Any(); } }
+
+            public bool Sensitive { get; set; }
+            
+            public string SpoilerText { get; set; }
+            public bool HasSpoilerText { get { return !string.IsNullOrWhiteSpace(SpoilerText); } }
+
+            public StatusVisibilityEnum Visibility { get; set; } = StatusVisibilityEnum.Unknow;
+            public bool HasVisibility { get { return Visibility != StatusVisibilityEnum.Unknow;  } }
         }
     }
 }
