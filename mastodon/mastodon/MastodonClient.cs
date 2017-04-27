@@ -346,22 +346,22 @@ namespace mastodon
             GetAuthenticatedData<object>(param);
         }
 
-        public void ReblogStatus()
+        public Status ReblogStatus(string accessToken, int statusId)
         {
             throw new NotImplementedException();
         }
 
-        public void UnreblogStatus()
+        public Status UnreblogStatus(string accessToken, int statusId)
         {
             throw new NotImplementedException();
         }
 
-        public void FavouritingStatus()
+        public Status FavouritingStatus(string accessToken, int statusId)
         {
             throw new NotImplementedException();
         }
 
-        public void UnfavouritingStatus()
+        public Status UnfavouritingStatus(string accessToken, int statusId)
         {
             throw new NotImplementedException();
         }
