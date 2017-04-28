@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
-    <PackageId>mastodon.NET</PackageId>
-    <PackageVersion>0.1.0-alpha</PackageVersion>
-    <Title>mastodon.NET</Title>
+    <PackageId>Mastodon</PackageId>
+    <PackageVersion>0.1.0</PackageVersion>
+    <Title>Mastodon API Client</Title>
     <Authors>Nicolas Constant</Authors>
     <Description>.NET Wrapper for Mastodon API.</Description>
     <PackageProjectUrl>https://github.com/NicolasConstant/mastodon.NET</PackageProjectUrl>
