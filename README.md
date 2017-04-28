@@ -3,7 +3,7 @@
 
  Still work in progress, insights and pull requests welcome!
 
-## Install mastodon.NET
+## Install
 
 Find it on [Nuget](https://www.nuget.org/packages/Mastodon/0.1.0)
 
