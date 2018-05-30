@@ -4,7 +4,7 @@ namespace mastodon.Models
 {
     public class Status
     {
-        public int id { get; set; }
+        public string id { get; set; }
         public DateTime created_at { get; set; }
         public int? in_reply_to_id { get; set; }
         public int? in_reply_to_account_id { get; set; }
