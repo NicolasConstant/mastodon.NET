@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using mastodon.Consts;
 using mastodon.Enums;
@@ -265,7 +267,7 @@ namespace mastodon
             {
                 Type = Method.GET,
                 Route = string.Format(ApiRoutes.GetAccountStatuses, accountId),
-                AccessToken = accessToken, 
+                AccessToken = accessToken,
                 Limit = limit,
                 OnlyMedia = onlyMedia,
                 ExcludeReplies = excludeReplies
@@ -323,17 +325,37 @@ namespace mastodon
         {
             var param = new RestParameters()
             {
-                Type = Method.POST, 
+                Type = Method.POST,
                 Route = ApiRoutes.PostNewStatus,
                 AccessToken = accessToken,
                 Status = status,
-                InReplyToId = inReplyToId, 
+                InReplyToId = inReplyToId,
                 MediaIds = mediaIds,
                 Sensitive = sensitive,
                 SpoilerText = spoilerText,
                 Visibility = visibility
             };
             return GetAuthenticatedData<Status>(param);
+        }
+
+        public Attachment UploadingMediaAttachment(string accessToken, string description, byte[] mediaBytes, string mediaFileName)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                var form = new MultipartFormDataContent();
+                //form.Add(new StringContent(focus), "focus"); //TODO
+                form.Add(new StringContent(description), "description");
+                form.Add(new ByteArrayContent(mediaBytes, 0, mediaBytes.Length), "file",
+                    mediaFileName);
+
+                var response = httpClient.PostAsync(_url + ApiRoutes.UploadMediaAttachment, form).Result;
+                response.EnsureSuccessStatusCode();
+
+                var sd = response.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<Attachment>(sd);
+            }
         }
 
         public void DeleteStatus(string accessToken, int statusId)
@@ -398,7 +420,7 @@ namespace mastodon
             var client = new RestClient(_url);
             var request = new RestRequest(param.Route, param.Type);
 
-            if(param.HasAccessToken) request.AddParameter("Authorization", string.Format("Bearer " + param.AccessToken), ParameterType.HttpHeader);
+            if (param.HasAccessToken) request.AddParameter("Authorization", string.Format("Bearer " + param.AccessToken), ParameterType.HttpHeader);
 
             //TODO move params names to dedicated struct
             if (param.HasLimit) request.AddParameter("limit", param.Limit);
@@ -410,7 +432,13 @@ namespace mastodon
             if (param.HasUri) request.AddParameter("uri", param.Uri);
             if (param.HasStatus) request.AddParameter("status", param.Status);
             if (param.HasInReplyToId) request.AddParameter("in_reply_to_id", param.InReplyToId);
-            if (param.HasMediaIds) request.AddParameter("media_ids", param.MediaIds); //TODO Format this correctly
+            if (param.HasMediaIds)
+            {
+                foreach (var id in param.MediaIds)
+                {
+                    request.AddParameter("media_ids[]", id);
+                }
+            }
             if (param.Sensitive) request.AddParameter("sensitive", "true");
             if (param.HasSpoilerText) request.AddParameter("spoiler_text", param.SpoilerText);
             if (param.HasVisibility) request.AddParameter("visibility", StatusVisibilityConverter.GetVisibility(param.Visibility));
@@ -426,7 +454,7 @@ namespace mastodon
             public Method Type { get; set; }
 
             public string AccessToken { get; set; }
-            public bool HasAccessToken {get { return !string.IsNullOrWhiteSpace(AccessToken); } }
+            public bool HasAccessToken { get { return !string.IsNullOrWhiteSpace(AccessToken); } }
 
             public int Limit { get; set; } = -1;
             public bool HasLimit { get { return Limit != -1; } }
@@ -440,12 +468,12 @@ namespace mastodon
 
             public string Query { get; set; }
             public bool HasQuery { get { return !string.IsNullOrWhiteSpace(Query); } }
-            
+
             public string Uri { get; set; }
             public bool HasUri { get { return !string.IsNullOrWhiteSpace(Uri); } }
 
             public string Status { get; set; }
-            public bool HasStatus { get { return !string.IsNullOrWhiteSpace(Status);  } }
+            public bool HasStatus { get { return !string.IsNullOrWhiteSpace(Status); } }
 
             public int InReplyToId { get; set; } = -1;
             public bool HasInReplyToId { get { return InReplyToId != -1; } }
@@ -454,12 +482,12 @@ namespace mastodon
             public bool HasMediaIds { get { return MediaIds != null && MediaIds.Any(); } }
 
             public bool Sensitive { get; set; }
-            
+
             public string SpoilerText { get; set; }
             public bool HasSpoilerText { get { return !string.IsNullOrWhiteSpace(SpoilerText); } }
 
             public StatusVisibilityEnum Visibility { get; set; } = StatusVisibilityEnum.Unknow;
-            public bool HasVisibility { get { return Visibility != StatusVisibilityEnum.Unknow;  } }
+            public bool HasVisibility { get { return Visibility != StatusVisibilityEnum.Unknow; } }
         }
     }
 }
