@@ -1,42 +1,25 @@
-﻿using mastodon.Consts;
+﻿using System.Threading.Tasks;
+using mastodon.Consts;
 using mastodon.Models;
-using RestSharp.Portable;
 
 namespace mastodon
 {
     public partial class MastodonClient
     {
-        public Notification[] GetNotifications(string accessToken)
+        public async Task<Notification[]> GetNotificationsAsync(string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.GetNotifications,
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Notification[]>(param);
+            return await GetDataAsync<Notification[]>(accessToken, ApiRoutes.GetNotifications);
         }
 
-        public Notification GetSingleNotifications(string accessToken, int id)
+        public async Task<Notification> GetSingleNotificationsAsync(string accessToken, int id)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = string.Format(ApiRoutes.GetSingleNotifications, id),
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Notification>(param);
+            var route = string.Format(ApiRoutes.GetSingleNotifications, id);
+            return await GetDataAsync<Notification>(accessToken, route);
         }
 
-        public void ClearNotifications(string accessToken)
+        public async Task ClearNotificationsAsync(string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = ApiRoutes.ClearNotifications,
-                AccessToken = accessToken
-            };
-            GetAuthenticatedData<object>(param);
+            await GetDataAsync(accessToken, ApiRoutes.ClearNotifications);
         }
     }
 }

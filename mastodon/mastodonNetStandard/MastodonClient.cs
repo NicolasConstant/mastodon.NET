@@ -27,13 +27,19 @@ namespace mastodon
 
         private async Task<T> GetDataAsync<T>(string accessToken, string route, IEnumerable<KeyValuePair<string,string>> parameters = null)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            var url = $"https://{_mastodonInstance}{route}";
-            if(parameters != null) url += "&" + string.Join("&", parameters.Select(kvp => kvp.Key + "=" + kvp.Value));
-
-            var responseString = await _httpClient.GetStringAsync(url);
+            var responseString = await GetDataAsync(accessToken, route, parameters);
             return JsonConvert.DeserializeObject<T>(responseString);
         }
+
+        private async Task<string> GetDataAsync(string accessToken, string route, IEnumerable<KeyValuePair<string, string>> parameters = null)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            var url = $"https://{_mastodonInstance}{route}";
+            if (parameters != null) url += "&" + string.Join("&", parameters.Select(kvp => kvp.Key + "=" + kvp.Value));
+
+            return await _httpClient.GetStringAsync(url);
+        }
+
 
         private async Task<string> PostDataAsync(string accessToken, string route, IEnumerable<KeyValuePair<string, string>> content = null)
         {
