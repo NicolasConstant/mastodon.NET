@@ -33,7 +33,9 @@ namespace mastodon
 
         private async Task<string> GetDataAsync(string accessToken, string route, IEnumerable<KeyValuePair<string, string>> parameters = null)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            if(!string.IsNullOrWhiteSpace(accessToken))
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
             var url = $"https://{_mastodonInstance}{route}";
             if (parameters != null) url += "&" + string.Join("&", parameters.Select(kvp => kvp.Key + "=" + kvp.Value));
 
