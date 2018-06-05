@@ -1,6 +1,5 @@
 ﻿using mastodon.Consts;
 using mastodon.Models;
-using RestSharp.Portable;
 
 namespace mastodon
 {

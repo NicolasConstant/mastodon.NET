@@ -1,102 +1,53 @@
-﻿using mastodon.Consts;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using mastodon.Consts;
 using mastodon.Models;
-using RestSharp.Portable;
 
 namespace mastodon
 {
     public partial class MastodonClient
     {
-        public Account GetAccount(int accountId, string accessToken)
+        public async Task<Account> GetAccountAsync(int accountId, string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = string.Format(ApiRoutes.GetAccount, accountId),
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Account>(param);
+            var route = string.Format(ApiRoutes.GetAccount, accountId);
+            return await GetDataAsync<Account>(accessToken, route);
         }
 
-        public Account GetCurrentAccount(string accessToken)
+        public async Task<Account> GetCurrentAccountAsync(string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.GetCurrentAccount,
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Account>(param);
+            return await GetDataAsync<Account>(accessToken, ApiRoutes.GetCurrentAccount);
         }
 
-        public Account[] GetAccountFollowers(int accountId, int limit, string accessToken)
+        public async Task<Account[]> GetAccountFollowersAsync(int accountId, int limit, string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = string.Format(ApiRoutes.GetAccountFollowers, accountId),
-                AccessToken = accessToken,
-                Limit = limit
-            };
-            return GetAuthenticatedData<Account[]>(param);
+            var route = string.Format(ApiRoutes.GetAccountFollowers, accountId);
+            return await GetDataAsync<Account[]>(accessToken, route, new []{ new KeyValuePair<string, string>("limit", limit.ToString())});
         }
 
-        public Account[] GetAccountFollowing(int accountId, string accessToken, int limit = -1)
+        public async Task<Account[]> GetAccountFollowingAsync(int accountId, string accessToken, int limit)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = string.Format(ApiRoutes.GetAccountFollowing, accountId),
-                AccessToken = accessToken,
-                Limit = limit
-            };
-            return GetAuthenticatedData<Account[]>(param);
+            var route = string.Format(ApiRoutes.GetAccountFollowing, accountId);
+            return await GetDataAsync<Account[]>(accessToken, route, new[] { new KeyValuePair<string, string>("limit", limit.ToString()) });
         }
 
-        public Relationships[] GetAccountRelationships(int accountId, string accessToken)
+        public async Task<Relationships[]> GetAccountRelationshipsAsync(int accountId, string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.GetAccountRelationships,
-                AccessToken = accessToken,
-                Id = accountId
-            };
-            return GetAuthenticatedData<Relationships[]>(param);
+            return await GetDataAsync<Relationships[]>(accessToken, ApiRoutes.GetAccountRelationships, new[] { new KeyValuePair<string, string>("id", accountId.ToString()) });
         }
 
-        public Account[] GetFollowRequests(string accessToken)
+        public async Task<Account[]> GetFollowRequestsAsync(string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.GetFollowRequests,
-                AccessToken = accessToken,
-            };
-            return GetAuthenticatedData<Account[]>(param);
+            return await GetDataAsync<Account[]>(accessToken, ApiRoutes.GetFollowRequests);
         }
 
-        public void AuthorizeFollowRequest(int id, string accessToken)
+        public async Task AuthorizeFollowRequestAsync(int id, string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = ApiRoutes.AuthorizeFollowRequest,
-                AccessToken = accessToken,
-                Id = id
-            };
-            GetAuthenticatedData<object>(param);
+            await PostDataAsync(accessToken, ApiRoutes.AuthorizeFollowRequest, new [] { new KeyValuePair<string, string>("id", id.ToString()) });
         }
 
-        public void RejectFollowRequest(int id, string accessToken)
+        public async Task RejectFollowRequestAsync(int id, string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = ApiRoutes.RejectFollowRequest,
-                AccessToken = accessToken,
-                Id = id
-            };
-            GetAuthenticatedData<object>(param);
+            await PostDataAsync(accessToken, ApiRoutes.RejectFollowRequest, new[] { new KeyValuePair<string, string>("id", id.ToString()) });
         }
     }
 }
