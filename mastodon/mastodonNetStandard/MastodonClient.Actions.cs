@@ -1,108 +1,70 @@
-﻿using mastodon.Consts;
+﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using mastodon.Consts;
 using mastodon.Models;
+using Newtonsoft.Json;
 
 namespace mastodon
 {
     public partial class MastodonClient
     {
-        public Relationships Follow(int accountId, string accessToken)
+        public async Task<Relationships> FollowAsync(int accountId, string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = string.Format(ApiRoutes.Follow, accountId),
-                AccessToken = accessToken,
-            };
-            return GetAuthenticatedData<Relationships>(param);
+            var route = string.Format(ApiRoutes.Follow, accountId);
+            var result = await PostDataAsync(accessToken, route);
+            return JsonConvert.DeserializeObject<Relationships>(result);
         }
 
-        public Relationships Unfollow(int accountId, string accessToken)
+        public async Task<Relationships> UnfollowAsync(int accountId, string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = string.Format(ApiRoutes.Unfollow, accountId),
-                AccessToken = accessToken,
-            };
-            return GetAuthenticatedData<Relationships>(param);
+            var route = string.Format(ApiRoutes.Unfollow, accountId);
+            var result = await PostDataAsync(accessToken, route);
+            return JsonConvert.DeserializeObject<Relationships>(result);
         }
 
-        public Account FollowRemote(string uri, string accessToken)
+        public async Task<Account> FollowRemoteAsync(string uri, string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = ApiRoutes.FollowRemote,
-                AccessToken = accessToken,
-                Uri = uri,
-            };
-            return GetAuthenticatedData<Account>(param);
+            var result = await PostDataAsync(accessToken, ApiRoutes.FollowRemote, new []{ new KeyValuePair<string, string>("uri", uri)});
+            return JsonConvert.DeserializeObject<Account>(result);
         }
 
-        public Relationships Block(int accountId, string accessToken)
+        public async Task<Relationships> BlockAsync(int accountId, string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = string.Format(ApiRoutes.Block, accountId),
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Relationships>(param);
+            var route = string.Format(ApiRoutes.Block, accountId);
+            var result = await PostDataAsync(accessToken, route);
+            return JsonConvert.DeserializeObject<Relationships>(result);
         }
 
-        public Relationships Unblock(int accountId, string accessToken)
+        public async Task<Relationships> UnblockAsync(int accountId, string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = string.Format(ApiRoutes.Unblock, accountId),
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Relationships>(param);
+            var route = string.Format(ApiRoutes.Unblock, accountId);
+            var result = await PostDataAsync(accessToken, route);
+            return JsonConvert.DeserializeObject<Relationships>(result);
         }
 
-        public Account[] GetBlocks(string accessToken)
+        public async Task<Account[]> GetBlocksAsync(string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.GetBlocks,
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Account[]>(param);
+            return await GetDataAsync<Account[]>(accessToken, ApiRoutes.GetBlocks);
         }
 
-        public Relationships Mute(int accountId, string accessToken)
+        public async Task<Relationships> MuteAsync(int accountId, string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = string.Format(ApiRoutes.Mute, accountId),
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Relationships>(param);
+            var route = string.Format(ApiRoutes.Mute, accountId);
+            var result = await PostDataAsync(accessToken, route);
+            return JsonConvert.DeserializeObject<Relationships>(result);
         }
 
-        public Account[] GetMutes(string accessToken)
+        public async Task<Account[]> GetMutesAsync(string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.GetMutes,
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Account[]>(param);
+            return await GetDataAsync<Account[]>(accessToken, ApiRoutes.GetMutes);
         }
 
-        public Relationships Unmute(int accountId, string accessToken)
+        public async Task<Relationships> UnmuteAsync(int accountId, string accessToken)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = string.Format(ApiRoutes.Unmute, accountId),
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Relationships>(param);
+            var route = string.Format(ApiRoutes.Unmute, accountId);
+            var result = await PostDataAsync(accessToken, route);
+            return JsonConvert.DeserializeObject<Relationships>(result);
         }
     }
 }
