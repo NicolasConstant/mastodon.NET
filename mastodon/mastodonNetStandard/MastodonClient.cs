@@ -42,6 +42,11 @@ namespace mastodon
             return await _httpClient.GetStringAsync(url);
         }
 
+        private async Task<T> PostDataAsync<T>(string accessToken, string route, IEnumerable<KeyValuePair<string, string>> content = null)
+        {
+            var responseString = await PostDataAsync(accessToken, route, content);
+            return JsonConvert.DeserializeObject<T>(responseString);
+        }
 
         private async Task<string> PostDataAsync(string accessToken, string route, IEnumerable<KeyValuePair<string, string>> content = null)
         {
@@ -51,6 +56,15 @@ namespace mastodon
             var encodedContent = new FormUrlEncodedContent(content ?? Enumerable.Empty<KeyValuePair<string, string>>());
             var response = await _httpClient.PostAsync(url, encodedContent);
             return await response.Content.ReadAsStringAsync();
+        }
+
+        private async Task DeleteDataAsync(string accessToken, string route)
+        {
+            if (!string.IsNullOrWhiteSpace(accessToken))
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            var url = $"https://{_mastodonInstance}{route}";
+            await _httpClient.DeleteAsync(url);
         }
 
         //private T GetAuthenticatedData<T>(RestParameters param)
