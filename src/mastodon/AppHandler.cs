@@ -23,7 +23,7 @@ namespace mastodon
         }
         #endregion
 
-        public async Task<AppInfo> CreateAppAsync(string clientName, string redirectUris, AppScopeEnum scopes, string website)
+        public async Task<AppInfo> CreateAppAsync(string clientName, AppScopeEnum scopes, string website, string redirectUris = "urn:ietf:wg:oauth:2.0:oob")
         {
             var parameters = new List<KeyValuePair<string, string>>();
             parameters.Add(new KeyValuePair<string, string>("client_name", clientName));

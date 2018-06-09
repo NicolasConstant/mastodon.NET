@@ -53,6 +53,8 @@ namespace mastodon.Tests
 
         public static string UserPassword => GetLocalSettings().UserPassword;
 
+        public static string OauthCode => GetLocalSettings().OauthCode;
+
         private static LocalSettings GetLocalSettings()
         {
             if (_localSettings != null) return _localSettings;
@@ -83,6 +85,7 @@ namespace mastodon.Tests
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
         public string Token { get; set; }
+        public string OauthCode { get; set; }
         public string UserLogin { get; set; }
         public string UserEmail { get; set; }
         public string UserPassword { get; set; }
