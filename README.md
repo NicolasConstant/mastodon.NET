@@ -52,7 +52,7 @@ using(var authHandler = new AuthHandler("InstanceName")){
 
  Access API via Client
 ```csharp
-using(client = new MastodonClient("InstanceUri")){
+using(var client = new MastodonClient("InstanceUri")){
     var timeline = await client.GetHomeTimelineAsync("access_token");
 }
 ```
