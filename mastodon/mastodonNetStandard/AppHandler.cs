@@ -1,37 +1,48 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Net.Http;
+using System.Threading.Tasks;
 using mastodon.Consts;
 using mastodon.Enums;
 using mastodon.Models;
 using mastodon.Tools;
 using Newtonsoft.Json;
-using RestSharp.Portable;
-using RestSharp.Portable.HttpClient;
 
 namespace mastodon
 {
     public class AppHandler
     {
-        private readonly string _url;
-
+        private readonly string _instanceUrl;
+        private readonly HttpClient _httpClient = new HttpClient();
+        
         #region Ctor
-        public AppHandler(string url)
+        public AppHandler(string instanceName)
         {
-            _url = url;
+            _instanceUrl = $"https://{instanceName}";
         }
         #endregion
 
-        public AppInfo CreateApp(string clientName, string redirectUris, AppScopeEnum scopes, string website)
+        public async Task<AppInfo> CreateAppAsync(string clientName, string redirectUris, AppScopeEnum scopes, string website)
         {
-            var client = new RestClient(_url);
-            var request = new RestRequest(ApiRoutes.CreateApp, Method.POST);
-            request.AddParameter("client_name", clientName);
-            request.AddParameter("redirect_uris", redirectUris);
-            request.AddParameter("scopes", AppScopesConverter.GetScopes(scopes));
-            request.AddParameter("website", website);
-            request.AddHeader("Content-Type", "multipart/form-data");
+            var parameters = new List<KeyValuePair<string, string>>();
+            parameters.Add(new KeyValuePair<string, string>("client_name", clientName));
+            parameters.Add(new KeyValuePair<string, string>("redirect_uris", redirectUris));
+            parameters.Add(new KeyValuePair<string, string>("scopes", AppScopesConverter.GetScopes(scopes)));
+            parameters.Add(new KeyValuePair<string, string>("website", website));
 
-            var response = client.Execute(request);
-            var content = response.Result.Content;
+            //request.AddParameter("client_name", clientName);
+            //request.AddParameter("redirect_uris", redirectUris);
+            //request.AddParameter("scopes", AppScopesConverter.GetScopes(scopes));
+            //request.AddParameter("website", website);
+            //request.AddHeader("Content-Type", "multipart/form-data");
+
+            var formUrlEncodedContent = new FormUrlEncodedContent(parameters);
+            var url = _instanceUrl + ApiRoutes.CreateApp;
+            var response = await _httpClient.PostAsync(url, formUrlEncodedContent);
+
+            //var response = client.Execute(request);
+            var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<AppInfo>(content);
         }
     }

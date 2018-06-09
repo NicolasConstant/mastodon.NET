@@ -1,6 +1,7 @@
 ﻿using System.Configuration;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using mastodon.Enums;
 using mastodon.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,7 +12,7 @@ namespace mastodon.Tests
     public class MastodonClientTests
     {
         [TestInitialize]
-        public void TestInit()
+        public async Task TestInit()
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
                                                    | SecurityProtocolType.Tls11
@@ -19,62 +20,62 @@ namespace mastodon.Tests
         }
 
         [TestMethod]
-        public void GetAccount()
+        public async Task GetAccount()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Read);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var account = client.GetAccount(1, tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var account = await client.GetAccountAsync(1, tokenInfo.access_token);
 
             Assert.IsNotNull(account.url);
             Assert.IsNotNull(account.username);
         }
 
         [TestMethod]
-        public void GetCurrentAccount()
+        public async Task GetCurrentAccount()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Read);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var account = client.GetCurrentAccount(tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var account = await client.GetCurrentAccountAsync(tokenInfo.access_token);
 
             Assert.IsNotNull(account.url);
             Assert.IsNotNull(account.username);
         }
 
         [TestMethod]
-        public void GetAccountFollowers()
+        public async Task GetAccountFollowers()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Read);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var accounts = client.GetAccountFollowers(1, 4, tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var accounts = await client.GetAccountFollowersAsync(1, 4, tokenInfo.access_token);
 
             Assert.IsNotNull(accounts);
             Assert.AreEqual(4, accounts.Length);
         }
         
         [TestMethod]
-        public void GetAccountFollowing()
+        public async Task GetAccountFollowing()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Read);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var accounts = client.GetAccountFollowing(1, tokenInfo.access_token, 4);
+            var client = new MastodonClient(Settings.InstanceName);
+            var accounts = await client.GetAccountFollowingAsync(1, tokenInfo.access_token, 4);
 
             Assert.IsNotNull(accounts);
             Assert.AreEqual(4, accounts.Length);
         }
 
         [TestMethod]
-        public void GetAccountStatuses()
+        public async Task GetAccountStatuses()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Read);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var statuses1 = client.GetAccountStatuses(1, tokenInfo.access_token, 4);
-            var statuses2 = client.GetAccountStatuses(1, tokenInfo.access_token, 4, true);
-            var statuses3 = client.GetAccountStatuses(1, tokenInfo.access_token, 4, false, true);
+            var client = new MastodonClient(Settings.InstanceName);
+            var statuses1 = await client.GetAccountStatusesAsync(1, tokenInfo.access_token, 4);
+            var statuses2 = await client.GetAccountStatusesAsync(1, tokenInfo.access_token, 4, true);
+            var statuses3 = await client.GetAccountStatusesAsync(1, tokenInfo.access_token, 4, false, true);
 
             Assert.AreEqual(4, statuses1.Length);
             Assert.AreEqual(4, statuses2.Length);
@@ -82,243 +83,243 @@ namespace mastodon.Tests
         }
 
         [TestMethod]
-        public void GetAccountRelationships()
+        public async Task GetAccountRelationships()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Read);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var relationships = client.GetAccountRelationships(1, tokenInfo.access_token); //TODO pass a array Ids
+            var client = new MastodonClient(Settings.InstanceName);
+            var relationships = await client.GetAccountRelationshipsAsync(1, tokenInfo.access_token); //TODO pass a array Ids
             Assert.IsNotNull(relationships);
             Assert.IsTrue(relationships.First().id != default(int));
         }
 
         [TestMethod]
-        public void GetFollowRequests()
+        public async Task GetFollowRequests()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Follow);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var followRequests = client.GetFollowRequests(tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var followRequests = await client.GetFollowRequestsAsync(tokenInfo.access_token);
             Assert.IsNotNull(followRequests);
         }
 
         [TestMethod]
-        public void GetHomeTimeline()
+        public async Task GetHomeTimeline()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Read);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var timeline = client.GetHomeTimeline(tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var timeline = await client.GetHomeTimelineAsync(tokenInfo.access_token);
         }
 
         [TestMethod]
-        public void GetPublicTimeline()
+        public async Task GetPublicTimeline()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Read);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var timeline1 = client.GetPublicTimeline(tokenInfo.access_token);
-            var timeline2 = client.GetPublicTimeline(tokenInfo.access_token, true);
+            var client = new MastodonClient(Settings.InstanceName);
+            var timeline1 = await client.GetPublicTimelineAsync(tokenInfo.access_token);
+            var timeline2 = await client.GetPublicTimelineAsync(tokenInfo.access_token, true);
         }
 
         [TestMethod]
-        public void GetHastagTimeline()
+        public async Task GetHastagTimeline()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Read);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var timeline1 = client.GetHastagTimeline("mastodon", tokenInfo.access_token);
-            var timeline2 = client.GetHastagTimeline("mastodon", tokenInfo.access_token, true);
+            var client = new MastodonClient(Settings.InstanceName);
+            var timeline1 = await client.GetHastagTimelineAsync("mastodon", tokenInfo.access_token);
+            var timeline2 = await client.GetHastagTimelineAsync("mastodon", tokenInfo.access_token, true);
         }
 
         [TestMethod]
-        public Status PostNewStatus()
+        public async Task<Status> PostNewStatus()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Write);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Write);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var status = client.PostNewStatus(tokenInfo.access_token, "Cool status for testing purpose", -1, null, true, "TESTING SPOILER", StatusVisibilityEnum.Private);
+            var client = new MastodonClient(Settings.InstanceName);
+            var status = await client.PostNewStatusAsync(tokenInfo.access_token, "Cool status for testing purpose", StatusVisibilityEnum.Private, -1, null, true, "TESTING SPOILER");
             Assert.IsNotNull(status.content);
             return status;
         }
 
         [TestMethod]
-        public void DeleteStatus()
+        public async Task DeleteStatus()
         {
-            var status = PostNewStatus();
+            var status = await PostNewStatus();
 
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Write);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Write);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            client.DeleteStatus(tokenInfo.access_token, status.id);
+            var client = new MastodonClient(Settings.InstanceName);
+            await client.DeleteStatusAsync(tokenInfo.access_token, status.id);
         }
 
         [TestMethod]
-        public void GetFavorites()
+        public async Task GetFavorites()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Read);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var favs = client.GetFavorites(tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var favs = await client.GetFavoritesAsync(tokenInfo.access_token);
             Assert.IsNotNull(favs);
         }
 
         [TestMethod]
-        public void Follow()
+        public async Task Follow()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Follow);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var followedAccount = client.Follow(1, tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var followedAccount = await client.FollowAsync(1, tokenInfo.access_token);
             Assert.IsNotNull(followedAccount);
             Assert.IsTrue(followedAccount.following);
         }
 
         [TestMethod]
-        public void FollowRemote()
+        public async Task FollowRemote()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Follow);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var followedAccount = client.FollowRemote("@Gargron@mastodon.social", tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var followedAccount = await client.FollowRemoteAsync("@Gargron@mastodon.social", tokenInfo.access_token);
             Assert.IsNotNull(followedAccount);
             Assert.AreEqual("Eugen", followedAccount.display_name);
         }
 
         [TestMethod]
-        public void Unfollow()
+        public async Task Unfollow()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Follow);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var unfollowedAccount = client.Unfollow(1, tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var unfollowedAccount = await client.UnfollowAsync(1, tokenInfo.access_token);
             Assert.IsNotNull(unfollowedAccount);
             Assert.IsFalse(unfollowedAccount.following);
         }
 
         [TestMethod]
-        public void Block()
+        public async Task Block()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Follow);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var blockedAccount = client.Block(10, tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var blockedAccount = await client.BlockAsync(10, tokenInfo.access_token);
             Assert.IsNotNull(blockedAccount);
             Assert.IsTrue(blockedAccount.blocking);
         }
 
         [TestMethod]
-        public void Unblock()
+        public async Task Unblock()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Follow);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var unblockedAccount = client.Unblock(10, tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var unblockedAccount = await client.UnblockAsync(10, tokenInfo.access_token);
             Assert.IsNotNull(unblockedAccount);
             Assert.IsFalse(unblockedAccount.blocking);
         }
 
         [TestMethod]
-        public void GetBlocks()
+        public async Task GetBlocks()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Follow);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var blocks = client.GetBlocks(tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var blocks = await client.GetBlocksAsync(tokenInfo.access_token);
             Assert.IsNotNull(blocks);
         }
 
         [TestMethod]
-        public void Mute()
+        public async Task Mute()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Follow);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var mutedAccount = client.Mute(2, tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var mutedAccount = await client.MuteAsync(2, tokenInfo.access_token);
             Assert.IsNotNull(mutedAccount);
             Assert.IsTrue(mutedAccount.muting);
         }
 
         [TestMethod]
-        public void GetMutes()
+        public async Task GetMutes()
         {
             Mute(); //Make sure an account is muted
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Follow);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var mutedAccounts = client.GetMutes(tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var mutedAccounts = await client.GetMutesAsync(tokenInfo.access_token);
             Assert.IsNotNull(mutedAccounts);
             Assert.IsFalse(string.IsNullOrWhiteSpace(mutedAccounts.First().username));
         }
 
         [TestMethod]
-        public void Unmuted()
+        public async Task Unmuted()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Follow);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Follow);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var unmutedAccount = client.Unmute(2, tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var unmutedAccount = await client.UnmuteAsync(2, tokenInfo.access_token);
             Assert.IsNotNull(unmutedAccount);
             Assert.IsFalse(unmutedAccount.muting);
         }
 
         [TestMethod]
-        public void SearchAccount()
+        public async Task SearchAccount()
         {
             var q = "ale";
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Read);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var accounts = client.SearchAccounts(q, tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var accounts = await client.SearchAccountsAsync(q, tokenInfo.access_token);
             Assert.IsNotNull(accounts);
             Assert.AreEqual(40, accounts.Length);
             Assert.IsTrue(accounts.First().username.Contains(q) || accounts.First().display_name.Contains(q));
         }
 
         [TestMethod]
-        public void GetInstance()
+        public async Task GetInstance()
         {
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var instance = client.GetInstance();
+            var client = new MastodonClient(Settings.InstanceName);
+            var instance = await client.GetInstanceAsync();
             Assert.IsNotNull(instance);
             Assert.IsFalse(string.IsNullOrWhiteSpace(instance.uri));
         }
 
         [TestMethod]
-        public void GetNotifications()
+        public async Task GetNotifications()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Read);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var notifications = client.GetNotifications(tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            var notifications = await client.GetNotificationsAsync(tokenInfo.access_token);
             Assert.IsNotNull(notifications);
             Assert.IsFalse(string.IsNullOrWhiteSpace(notifications.First().type));
         }
 
         [TestMethod]
-        public void GetSingleNotifications()
+        public async Task GetSingleNotifications()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Read);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            var notification = client.GetSingleNotifications(tokenInfo.access_token, 114760);
+            var client = new MastodonClient(Settings.InstanceName);
+            var notification = await client.GetSingleNotificationsAsync(tokenInfo.access_token, 114760);
             Assert.IsNotNull(notification);
             Assert.IsFalse(string.IsNullOrWhiteSpace(notification.type));
         }
 
         [TestMethod]
-        public void ClearNotification()
+        public async Task ClearNotification()
         {
-            var tokenInfo = GetTokenInfo(AppScopeEnum.Read);
+            var tokenInfo = await GetTokenInfo(AppScopeEnum.Read);
 
-            var client = new MastodonClient(Settings.InstanceUrl);
-            client.ClearNotifications(tokenInfo.access_token);
+            var client = new MastodonClient(Settings.InstanceName);
+            await client.ClearNotificationsAsync(tokenInfo.access_token);
         }
 
-        private TokenInfo GetTokenInfo(AppScopeEnum scope)
+        private async Task<TokenInfo> GetTokenInfo(AppScopeEnum scope)
         {
-            var authHandler = new AuthHandler(Settings.InstanceUrl);
-            var tokenInfo = authHandler.GetTokenInfo(Settings.ClientId, Settings.ClientSecret, Settings.UserLogin, Settings.UserPassword, scope);
+            var authHandler = new AuthHandler(Settings.InstanceName);
+            var tokenInfo = await authHandler.GetTokenInfoAsync(Settings.ClientId, Settings.ClientSecret, Settings.UserLogin, Settings.UserPassword, scope);
             return tokenInfo;
         }
     }
