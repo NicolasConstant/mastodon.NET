@@ -35,6 +35,18 @@ namespace mastodon.Tests
             }
         }
 
+
+        public static string Token
+        {
+            get => GetLocalSettings().Token;
+            set
+            {
+                var settings = GetLocalSettings();
+                settings.Token = value;
+                SetLocalSettings(settings);
+            }
+        }
+
         public static string UserLogin => GetLocalSettings().UserLogin;
 
         public static string UserEmail => GetLocalSettings().UserEmail;
@@ -70,6 +82,7 @@ namespace mastodon.Tests
         public string InstanceName { get; set; }
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
+        public string Token { get; set; }
         public string UserLogin { get; set; }
         public string UserEmail { get; set; }
         public string UserPassword { get; set; }
