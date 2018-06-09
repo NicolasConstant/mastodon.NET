@@ -19,7 +19,7 @@ namespace mastodon
 
         public async Task ClearNotificationsAsync(string accessToken)
         {
-            await GetDataAsync(accessToken, ApiRoutes.ClearNotifications);
+            await PostDataAsync(accessToken, ApiRoutes.ClearNotifications);
         }
     }
 }

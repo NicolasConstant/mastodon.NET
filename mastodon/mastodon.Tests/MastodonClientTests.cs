@@ -12,7 +12,7 @@ namespace mastodon.Tests
     public class MastodonClientTests
     {
         [TestInitialize]
-        public async Task TestInit()
+        public void TestInit()
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
                                                    | SecurityProtocolType.Tls11
@@ -77,9 +77,9 @@ namespace mastodon.Tests
             var statuses2 = await client.GetAccountStatusesAsync(1, tokenInfo.access_token, 4, true);
             var statuses3 = await client.GetAccountStatusesAsync(1, tokenInfo.access_token, 4, false, true);
 
-            Assert.AreEqual(4, statuses1.Length);
-            Assert.AreEqual(4, statuses2.Length);
-            Assert.AreEqual(4, statuses3.Length);
+            Assert.IsTrue(statuses1.Any());
+            Assert.IsTrue(statuses2.Any());
+            Assert.IsTrue(statuses3.Any());
         }
 
         [TestMethod]
@@ -110,6 +110,8 @@ namespace mastodon.Tests
 
             var client = new MastodonClient(Settings.InstanceName);
             var timeline = await client.GetHomeTimelineAsync(tokenInfo.access_token);
+            Assert.IsNotNull(timeline);
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(timeline.First().id));
         }
 
         [TestMethod]
@@ -119,7 +121,11 @@ namespace mastodon.Tests
 
             var client = new MastodonClient(Settings.InstanceName);
             var timeline1 = await client.GetPublicTimelineAsync(tokenInfo.access_token);
+            Assert.IsNotNull(timeline1);
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(timeline1.First().id));
             var timeline2 = await client.GetPublicTimelineAsync(tokenInfo.access_token, true);
+            Assert.IsNotNull(timeline2);
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(timeline2.First().id));
         }
 
         [TestMethod]
@@ -129,28 +135,31 @@ namespace mastodon.Tests
 
             var client = new MastodonClient(Settings.InstanceName);
             var timeline1 = await client.GetHastagTimelineAsync("mastodon", tokenInfo.access_token);
+            Assert.IsNotNull(timeline1);
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(timeline1.First().id));
             var timeline2 = await client.GetHastagTimelineAsync("mastodon", tokenInfo.access_token, true);
+            Assert.IsNotNull(timeline2);
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(timeline2.First().id));
         }
 
         [TestMethod]
-        public async Task<Status> PostNewStatus()
+        public async Task PostNewStatus()
         {
             var tokenInfo = await GetTokenInfo(AppScopeEnum.Write);
 
             var client = new MastodonClient(Settings.InstanceName);
             var status = await client.PostNewStatusAsync(tokenInfo.access_token, "Cool status for testing purpose", StatusVisibilityEnum.Private, -1, null, true, "TESTING SPOILER");
-            Assert.IsNotNull(status.content);
-            return status;
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(status.content));
         }
 
         [TestMethod]
         public async Task DeleteStatus()
         {
-            var status = await PostNewStatus();
-
             var tokenInfo = await GetTokenInfo(AppScopeEnum.Write);
 
             var client = new MastodonClient(Settings.InstanceName);
+            var status = await client.PostNewStatusAsync(tokenInfo.access_token, "Cool status for testing purpose", StatusVisibilityEnum.Private, -1, null, true, "TESTING SPOILER");
+
             await client.DeleteStatusAsync(tokenInfo.access_token, status.id);
         }
 
@@ -162,6 +171,7 @@ namespace mastodon.Tests
             var client = new MastodonClient(Settings.InstanceName);
             var favs = await client.GetFavoritesAsync(tokenInfo.access_token);
             Assert.IsNotNull(favs);
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(favs.First().id));
         }
 
         [TestMethod]
@@ -227,6 +237,7 @@ namespace mastodon.Tests
             var client = new MastodonClient(Settings.InstanceName);
             var blocks = await client.GetBlocksAsync(tokenInfo.access_token);
             Assert.IsNotNull(blocks);
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(blocks.First().id));
         }
 
         [TestMethod]
@@ -235,7 +246,7 @@ namespace mastodon.Tests
             var tokenInfo = await GetTokenInfo(AppScopeEnum.Follow);
 
             var client = new MastodonClient(Settings.InstanceName);
-            var mutedAccount = await client.MuteAsync(2, tokenInfo.access_token);
+            var mutedAccount = await client.MuteAsync(1, tokenInfo.access_token);
             Assert.IsNotNull(mutedAccount);
             Assert.IsTrue(mutedAccount.muting);
         }
@@ -258,7 +269,7 @@ namespace mastodon.Tests
             var tokenInfo = await GetTokenInfo(AppScopeEnum.Follow);
 
             var client = new MastodonClient(Settings.InstanceName);
-            var unmutedAccount = await client.UnmuteAsync(2, tokenInfo.access_token);
+            var unmutedAccount = await client.UnmuteAsync(1, tokenInfo.access_token);
             Assert.IsNotNull(unmutedAccount);
             Assert.IsFalse(unmutedAccount.muting);
         }
@@ -273,7 +284,7 @@ namespace mastodon.Tests
             var accounts = await client.SearchAccountsAsync(q, tokenInfo.access_token);
             Assert.IsNotNull(accounts);
             Assert.AreEqual(40, accounts.Length);
-            Assert.IsTrue(accounts.First().username.Contains(q) || accounts.First().display_name.Contains(q));
+            Assert.IsTrue(accounts.First().username.ToLowerInvariant().Contains(q) || accounts.First().display_name.ToLowerInvariant().Contains(q));
         }
 
         [TestMethod]
@@ -302,7 +313,8 @@ namespace mastodon.Tests
             var tokenInfo = await GetTokenInfo(AppScopeEnum.Read);
 
             var client = new MastodonClient(Settings.InstanceName);
-            var notification = await client.GetSingleNotificationsAsync(tokenInfo.access_token, 114760);
+            var notifications = await client.GetNotificationsAsync(tokenInfo.access_token);
+            var notification = await client.GetSingleNotificationsAsync(tokenInfo.access_token, notifications.First().id);
             Assert.IsNotNull(notification);
             Assert.IsFalse(string.IsNullOrWhiteSpace(notification.type));
         }
@@ -319,7 +331,7 @@ namespace mastodon.Tests
         private async Task<TokenInfo> GetTokenInfo(AppScopeEnum scope)
         {
             var authHandler = new AuthHandler(Settings.InstanceName);
-            var tokenInfo = await authHandler.GetTokenInfoAsync(Settings.ClientId, Settings.ClientSecret, Settings.UserLogin, Settings.UserPassword, scope);
+            var tokenInfo = await authHandler.GetTokenInfoAsync(Settings.ClientId, Settings.ClientSecret, Settings.UserEmail, Settings.UserPassword, scope);
             return tokenInfo;
         }
     }

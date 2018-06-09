@@ -37,7 +37,7 @@ namespace mastodon
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             var url = $"https://{_mastodonInstance}{route}";
-            if (parameters != null) url += "&" + string.Join("&", parameters.Select(kvp => kvp.Key + "=" + kvp.Value));
+            if (parameters != null) url += "?" + string.Join("&", parameters.Select(kvp => kvp.Key + "=" + kvp.Value));
 
             return await _httpClient.GetStringAsync(url);
         }
