@@ -13,7 +13,7 @@ namespace mastodon
 {
     public partial class MastodonClient
     {
-        public async Task<Status[]> GetAccountStatusesAsync(int accountId, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false)
+        public async Task<Status[]> GetAccountStatusesAsync(string accountId, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false)
         {
             var route = string.Format(ApiRoutes.GetAccountStatuses, accountId);
 
@@ -87,24 +87,52 @@ namespace mastodon
             await DeleteDataAsync(accessToken, route);
         }
 
-        public async Task<Status> ReblogStatusAsync(string accessToken, int statusId)
+        public async Task<Status> ReblogStatusAsync(string accessToken, string statusId)
         {
-            throw new NotImplementedException();
+            var route = string.Format(ApiRoutes.ReblogStatus, statusId);
+            return await PostDataAsync<Status>(accessToken, route);
         }
 
-        public async Task<Status> UnreblogStatusAsync(string accessToken, int statusId)
+        public async Task<Status> UnreblogStatusAsync(string accessToken, string statusId)
         {
-            throw new NotImplementedException();
+            var route = string.Format(ApiRoutes.UnreblogStatus, statusId);
+            return await PostDataAsync<Status>(accessToken, route);
         }
 
-        public async Task<Status> FavouritingStatusAsync(string accessToken, int statusId)
+        public async Task<Status> FavouritingStatusAsync(string accessToken, string statusId)
         {
-            throw new NotImplementedException();
+            var route = string.Format(ApiRoutes.FavouritingStatus, statusId);
+            return await PostDataAsync<Status>(accessToken, route);
         }
 
-        public async Task<Status> UnfavouritingStatusAsync(string accessToken, int statusId)
+        public async Task<Status> UnfavouritingStatusAsync(string accessToken, string statusId)
         {
-            throw new NotImplementedException();
+            var route = string.Format(ApiRoutes.UnfavouritingStatus, statusId);
+            return await PostDataAsync<Status>(accessToken, route);
+        }
+
+        public async Task<Status> PinStatusAsync(string accessToken, string statusId)
+        {
+            var route = string.Format(ApiRoutes.PinStatus, statusId);
+            return await PostDataAsync<Status>(accessToken, route);
+        }
+
+        public async Task<Status> UnpinStatusAsync(string accessToken, string statusId)
+        {
+            var route = string.Format(ApiRoutes.UnpinStatus, statusId);
+            return await PostDataAsync<Status>(accessToken, route);
+        }
+
+        public async Task<Status> MuteStatusConversationAsync(string accessToken, string statusId)
+        {
+            var route = string.Format(ApiRoutes.MuteStatusConversation, statusId);
+            return await PostDataAsync<Status>(accessToken, route);
+        }
+
+        public async Task<Status> UnmuteStatusConversationAsync(string accessToken, string statusId)
+        {
+            var route = string.Format(ApiRoutes.UnmuteStatusConversation, statusId);
+            return await PostDataAsync<Status>(accessToken, route);
         }
     }
 }

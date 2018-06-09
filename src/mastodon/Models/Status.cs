@@ -24,5 +24,7 @@ namespace mastodon.Models
         public Status reblog { get; set; }
         public bool? favourited { get; set; }
         public bool? reblogged { get; set; }
+        public bool? pinned { get; set; }
+        public bool? muted { get; set; }
     }
 }

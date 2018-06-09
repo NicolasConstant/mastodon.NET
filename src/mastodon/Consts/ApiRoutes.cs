@@ -41,6 +41,10 @@
         public static string DeleteStatus = "/api/v1/statuses/{0}";
         public static string ReblogStatus = "/api/v1/statuses/{0}/reblog";
         public static string UnreblogStatus = "/api/v1/statuses/{0}/unreblog";
+        public static string PinStatus = "/api/v1/statuses/{0}/pin";
+        public static string UnpinStatus = "/api/v1/statuses/{0}/unpin";
+        public static string MuteStatusConversation = "/api/v1/statuses/{0}/mute";
+        public static string UnmuteStatusConversation = "/api/v1/statuses/{0}/unmute";
         public static string FavouritingStatus = "/api/v1/statuses/{0}/favourite";
         public static string UnfavouritingStatus = "/api/v1/statuses/{0}/unfavourite";
         public static string GetHomeTimeline = "/api/v1/timelines/home";
