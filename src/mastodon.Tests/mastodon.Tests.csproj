@@ -71,16 +71,16 @@
     <Compile Include="Tools\AppScopesConverterTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\mastodonNetStandard\mastodonNetStandard.csproj">
-      <Project>{d63d574a-7e46-4063-98f9-7c840abdc7de}</Project>
-      <Name>mastodonNetStandard</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\mastodon\mastodonNet.csproj">
+      <Project>{5d0debbe-b397-4281-8b1f-799b0fa68e89}</Project>
+      <Name>mastodonNet</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
