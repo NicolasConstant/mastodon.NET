@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using mastodon.Consts;
@@ -9,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace mastodon
 {
-    public class AuthHandler
+    public class AuthHandler : IDisposable
     {
         private readonly string _instanceUrl;
         private readonly HttpClient _httpClient = new HttpClient();
@@ -37,6 +38,11 @@ namespace mastodon
 
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<TokenInfo>(content);
+        }
+
+        public void Dispose()
+        {
+            _httpClient.Dispose();
         }
     }
 }

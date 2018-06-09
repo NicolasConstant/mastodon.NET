@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace mastodon
 {
-    public class AppHandler
+    public class AppHandler : IDisposable
     {
         private readonly string _instanceUrl;
         private readonly HttpClient _httpClient = new HttpClient();
@@ -37,6 +37,11 @@ namespace mastodon
 
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<AppInfo>(content);
+        }
+
+        public void Dispose()
+        {
+            _httpClient.Dispose();
         }
     }
 }

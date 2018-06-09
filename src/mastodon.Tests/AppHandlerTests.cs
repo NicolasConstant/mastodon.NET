@@ -20,12 +20,15 @@ namespace mastodon.Tests
         [TestMethod]
         public async Task CreateApp()
         {
-            var appHandler = new AppHandler(Settings.InstanceName);
-            var scopes = AppScopeEnum.Read | AppScopeEnum.Write | AppScopeEnum.Follow;
-            var appData = await appHandler.CreateAppAsync("mastodon.NET", "urn:ietf:wg:oauth:2.0:oob", scopes, "https://github.com/NicolasConstant/mastodon.NET");
-            Assert.IsTrue(!string.IsNullOrWhiteSpace(appData.client_secret));
-            Settings.ClientId = appData.client_id;
-            Settings.ClientSecret = appData.client_secret;
+            using (var appHandler = new AppHandler(Settings.InstanceName))
+            {
+                var scopes = AppScopeEnum.Read | AppScopeEnum.Write | AppScopeEnum.Follow;
+                var appData = await appHandler.CreateAppAsync("mastodon.NET", "urn:ietf:wg:oauth:2.0:oob", scopes,
+                    "https://github.com/NicolasConstant/mastodon.NET");
+                Assert.IsTrue(!string.IsNullOrWhiteSpace(appData.client_secret));
+                Settings.ClientId = appData.client_id;
+                Settings.ClientSecret = appData.client_secret;
+            }
         }
     }
 }

@@ -13,7 +13,7 @@
     <PackageReleaseNotes>First release</PackageReleaseNotes>
     <PackageLicenseUrl>https://github.com/NicolasConstant/mastodon.NET/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>mastodon api</PackageTags>
-    <RootNamespace>mastodonNet</RootNamespace>
+    <RootNamespace>Mastodon</RootNamespace>
     <AssemblyName>mastodonNet</AssemblyName>
   </PropertyGroup>
 
