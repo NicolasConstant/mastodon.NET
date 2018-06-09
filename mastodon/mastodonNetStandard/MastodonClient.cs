@@ -2,492 +2,144 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
-using mastodon.Consts;
+using System.Threading.Tasks;
 using mastodon.Enums;
-using mastodon.Models;
 using mastodon.Tools;
 using Newtonsoft.Json;
-using RestSharp.Portable;
-using RestSharp.Portable.HttpClient;
 
 namespace mastodon
 {
-    public class MastodonClient
+    public partial class MastodonClient
     {
-        private readonly string _url;
+        private readonly HttpClient _httpClient = new HttpClient();
+        private readonly string _mastodonInstance;
 
         #region Ctor
-        public MastodonClient(string url)
+        public MastodonClient(string mastodonInstance)
         {
-            _url = url;
+            _mastodonInstance = mastodonInstance;
         }
         #endregion
 
-        #region Account Infos
-        public Account GetAccount(int accountId, string accessToken)
+        private async Task<T> GetDataAsync<T>(string accessToken, string route, IEnumerable<KeyValuePair<string,string>> parameters = null)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = string.Format(ApiRoutes.GetAccount, accountId),
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Account>(param);
+            var responseString = await GetDataAsync(accessToken, route, parameters);
+            return JsonConvert.DeserializeObject<T>(responseString);
         }
 
-        public Account GetCurrentAccount(string accessToken)
+        private async Task<string> GetDataAsync(string accessToken, string route, IEnumerable<KeyValuePair<string, string>> parameters = null)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.GetCurrentAccount,
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Account>(param);
+            if(!string.IsNullOrWhiteSpace(accessToken))
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            var url = $"https://{_mastodonInstance}{route}";
+            if (parameters != null) url += "?" + string.Join("&", parameters.Select(kvp => kvp.Key + "=" + kvp.Value));
+
+            return await _httpClient.GetStringAsync(url);
         }
 
-        public Account[] GetAccountFollowers(int accountId, int limit, string accessToken)
+        private async Task<T> PostDataAsync<T>(string accessToken, string route, IEnumerable<KeyValuePair<string, string>> content = null)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = string.Format(ApiRoutes.GetAccountFollowers, accountId),
-                AccessToken = accessToken,
-                Limit = limit
-            };
-            return GetAuthenticatedData<Account[]>(param);
+            var responseString = await PostDataAsync(accessToken, route, content);
+            return JsonConvert.DeserializeObject<T>(responseString);
         }
 
-        public Account[] GetAccountFollowing(int accountId, string accessToken, int limit = -1)
+        private async Task<string> PostDataAsync(string accessToken, string route, IEnumerable<KeyValuePair<string, string>> content = null)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = string.Format(ApiRoutes.GetAccountFollowing, accountId),
-                AccessToken = accessToken,
-                Limit = limit
-            };
-            return GetAuthenticatedData<Account[]>(param);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            var url = $"https://{_mastodonInstance}{route}";
+
+            var encodedContent = new FormUrlEncodedContent(content ?? Enumerable.Empty<KeyValuePair<string, string>>());
+            var response = await _httpClient.PostAsync(url, encodedContent);
+            return await response.Content.ReadAsStringAsync();
         }
 
-        public Relationships[] GetAccountRelationships(int accountId, string accessToken)
+        private async Task DeleteDataAsync(string accessToken, string route)
         {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.GetAccountRelationships,
-                AccessToken = accessToken,
-                Id = accountId
-            };
-            return GetAuthenticatedData<Relationships[]>(param);
+            if (!string.IsNullOrWhiteSpace(accessToken))
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+            var url = $"https://{_mastodonInstance}{route}";
+            await _httpClient.DeleteAsync(url);
         }
 
-        public Account[] GetFollowRequests(string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.GetFollowRequests,
-                AccessToken = accessToken,
-            };
-            return GetAuthenticatedData<Account[]>(param);
-        }
+        //private T GetAuthenticatedData<T>(RestParameters param)
+        //{
+        //    var client = new RestClient(_url);
+        //    var request = new RestRequest(param.Route, param.Type);
 
-        //TODO test this
-        public void AuthorizeFollowRequest(int id, string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = ApiRoutes.AuthorizeFollowRequest,
-                AccessToken = accessToken,
-                Id = id
-            };
-            GetAuthenticatedData<object>(param);
-        }
+        //    if (param.HasAccessToken) request.AddParameter("Authorization", string.Format("Bearer " + param.AccessToken), ParameterType.HttpHeader);
 
-        //TODO test this
-        public void RejectFollowRequest(int id, string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = ApiRoutes.RejectFollowRequest,
-                AccessToken = accessToken,
-                Id = id
-            };
-            GetAuthenticatedData<object>(param);
-        }
-        #endregion
+        //    //TODO move params names to dedicated struct
+        //    if (param.HasLimit) request.AddParameter("limit", param.Limit);
+        //    if (param.OnlyMedia) request.AddParameter("only_media", "true");
+        //    if (param.ExcludeReplies) request.AddParameter("exclude_replies", "true");
+        //    if (param.Local) request.AddParameter("local", "true");
+        //    if (param.HasId) request.AddParameter("id", param.Id);
+        //    if (param.HasQuery) request.AddParameter("q", param.Query);
+        //    if (param.HasUri) request.AddParameter("uri", param.Uri);
+        //    if (param.HasStatus) request.AddParameter("status", param.Status);
+        //    if (param.HasInReplyToId) request.AddParameter("in_reply_to_id", param.InReplyToId);
+        //    if (param.HasMediaIds)
+        //    {
+        //        foreach (var id in param.MediaIds)
+        //        {
+        //            request.AddParameter("media_ids[]", id);
+        //        }
+        //    }
+        //    if (param.Sensitive) request.AddParameter("sensitive", "true");
+        //    if (param.HasSpoilerText) request.AddParameter("spoiler_text", param.SpoilerText);
+        //    if (param.HasVisibility) request.AddParameter("visibility", StatusVisibilityConverter.GetVisibility(param.Visibility));
 
-        #region Actions
-        public Relationships Follow(int accountId, string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = string.Format(ApiRoutes.Follow, accountId),
-                AccessToken = accessToken,
-            };
-            return GetAuthenticatedData<Relationships>(param);
-        }
+        //    var response = client.Execute(request);
+        //    var content = response.Result.Content;
+        //    return JsonConvert.DeserializeObject<T>(content);
+        //}
 
-        public Relationships Unfollow(int accountId, string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = string.Format(ApiRoutes.Unfollow, accountId),
-                AccessToken = accessToken,
-            };
-            return GetAuthenticatedData<Relationships>(param);
-        }
+        //private class RestParameters
+        //{
+        //    public string Route { get; set; }
+        //    public Method Type { get; set; }
 
-        public Account FollowRemote(string uri, string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = ApiRoutes.FollowRemote,
-                AccessToken = accessToken,
-                Uri = uri,
-            };
-            return GetAuthenticatedData<Account>(param);
-        }
+        //    public string AccessToken { get; set; }
+        //    public bool HasAccessToken { get { return !string.IsNullOrWhiteSpace(AccessToken); } }
 
-        public Relationships Block(int accountId, string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = string.Format(ApiRoutes.Block, accountId),
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Relationships>(param);
-        }
+        //    public int Limit { get; set; } = -1;
+        //    public bool HasLimit { get { return Limit != -1; } }
 
-        public Relationships Unblock(int accountId, string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = string.Format(ApiRoutes.Unblock, accountId),
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Relationships>(param);
-        }
+        //    public bool OnlyMedia { get; set; }
+        //    public bool ExcludeReplies { get; set; }
+        //    public bool Local { get; set; }
 
-        public Account[] GetBlocks(string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.GetBlocks,
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Account[]>(param);
-        }
+        //    public int Id { get; set; } = -1;
+        //    public bool HasId { get { return Id != -1; } }
 
-        public Relationships Mute(int accountId, string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = string.Format(ApiRoutes.Mute, accountId),
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Relationships>(param);
-        }
+        //    public string Query { get; set; }
+        //    public bool HasQuery { get { return !string.IsNullOrWhiteSpace(Query); } }
 
-        public Account[] GetMutes(string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.GetMutes,
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Account[]>(param);
-        }
+        //    public string Uri { get; set; }
+        //    public bool HasUri { get { return !string.IsNullOrWhiteSpace(Uri); } }
 
-        public Relationships Unmute(int accountId, string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = string.Format(ApiRoutes.Unmute, accountId),
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Relationships>(param);
-        }
-        #endregion
+        //    public string Status { get; set; }
+        //    public bool HasStatus { get { return !string.IsNullOrWhiteSpace(Status); } }
 
-        #region Notifications
-        public Notification[] GetNotifications(string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.GetNotifications,
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Notification[]>(param);
-        }
+        //    public int InReplyToId { get; set; } = -1;
+        //    public bool HasInReplyToId { get { return InReplyToId != -1; } }
 
-        public Notification GetSingleNotifications(string accessToken, int id)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = string.Format(ApiRoutes.GetSingleNotifications, id),
-                AccessToken = accessToken
-            };
-            return GetAuthenticatedData<Notification>(param);
-        }
+        //    public int[] MediaIds { get; set; }
+        //    public bool HasMediaIds { get { return MediaIds != null && MediaIds.Any(); } }
 
-        public void ClearNotifications(string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = ApiRoutes.ClearNotifications,
-                AccessToken = accessToken
-            };
-            GetAuthenticatedData<object>(param);
-        }
-        #endregion
+        //    public bool Sensitive { get; set; }
 
-        #region Timelines
-        public Status[] GetAccountStatuses(int accountId, string accessToken, int limit = -1, bool onlyMedia = false, bool excludeReplies = false)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = string.Format(ApiRoutes.GetAccountStatuses, accountId),
-                AccessToken = accessToken,
-                Limit = limit,
-                OnlyMedia = onlyMedia,
-                ExcludeReplies = excludeReplies
-            };
-            return GetAuthenticatedData<Status[]>(param);
-        }
+        //    public string SpoilerText { get; set; }
+        //    public bool HasSpoilerText { get { return !string.IsNullOrWhiteSpace(SpoilerText); } }
 
-        public Status[] GetHomeTimeline(string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.GetHomeTimeline,
-                AccessToken = accessToken,
-            };
-            return GetAuthenticatedData<Status[]>(param);
-        }
-
-        public Status[] GetPublicTimeline(string accessToken, bool local = false)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.GetPublicTimeline,
-                AccessToken = accessToken,
-                Local = local
-            };
-            return GetAuthenticatedData<Status[]>(param);
-        }
-
-        public Status[] GetHastagTimeline(string hashtag, string accessToken, bool local = false)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = string.Format(ApiRoutes.GetHastagTimeline, hashtag),
-                AccessToken = accessToken,
-                Local = local
-            };
-            return GetAuthenticatedData<Status[]>(param);
-        }
-
-        public Status[] GetFavorites(string accessToken)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = string.Format(ApiRoutes.GetFavourites),
-                AccessToken = accessToken,
-            };
-            return GetAuthenticatedData<Status[]>(param);
-        }
-
-        public Status PostNewStatus(string accessToken, string status, int inReplyToId = -1, int[] mediaIds = null, bool sensitive = false, string spoilerText = null, StatusVisibilityEnum visibility = StatusVisibilityEnum.Public)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.POST,
-                Route = ApiRoutes.PostNewStatus,
-                AccessToken = accessToken,
-                Status = status,
-                InReplyToId = inReplyToId,
-                MediaIds = mediaIds,
-                Sensitive = sensitive,
-                SpoilerText = spoilerText,
-                Visibility = visibility
-            };
-            return GetAuthenticatedData<Status>(param);
-        }
-
-        public Attachment UploadingMediaAttachment(string accessToken, string description, byte[] mediaBytes, string mediaFileName)
-        {
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-                var form = new MultipartFormDataContent();
-                //form.Add(new StringContent(focus), "focus"); //TODO
-                form.Add(new StringContent(description), "description");
-                form.Add(new ByteArrayContent(mediaBytes, 0, mediaBytes.Length), "file",
-                    mediaFileName);
-
-                var response = httpClient.PostAsync(_url + ApiRoutes.UploadMediaAttachment, form).Result;
-                response.EnsureSuccessStatusCode();
-
-                var sd = response.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<Attachment>(sd);
-            }
-        }
-
-        public void DeleteStatus(string accessToken, int statusId)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.DELETE,
-                Route = string.Format(ApiRoutes.DeleteStatus, statusId),
-                AccessToken = accessToken,
-            };
-            GetAuthenticatedData<object>(param);
-        }
-
-        public Status ReblogStatus(string accessToken, int statusId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Status UnreblogStatus(string accessToken, int statusId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Status FavouritingStatus(string accessToken, int statusId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Status UnfavouritingStatus(string accessToken, int statusId)
-        {
-            throw new NotImplementedException();
-        }
-        #endregion
-
-        #region Search
-        public Account[] SearchAccounts(string query, string accessToken, int limit = 40)
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.SearchForAccounts,
-                AccessToken = accessToken,
-                Limit = limit,
-                Query = query
-            };
-            return GetAuthenticatedData<Account[]>(param);
-        }
-        #endregion
-
-        public Instance GetInstance()
-        {
-            var param = new RestParameters()
-            {
-                Type = Method.GET,
-                Route = ApiRoutes.GetInstance,
-            };
-            return GetAuthenticatedData<Instance>(param);
-        }
-
-        private T GetAuthenticatedData<T>(RestParameters param)
-        {
-            var client = new RestClient(_url);
-            var request = new RestRequest(param.Route, param.Type);
-
-            if (param.HasAccessToken) request.AddParameter("Authorization", string.Format("Bearer " + param.AccessToken), ParameterType.HttpHeader);
-
-            //TODO move params names to dedicated struct
-            if (param.HasLimit) request.AddParameter("limit", param.Limit);
-            if (param.OnlyMedia) request.AddParameter("only_media", "true");
-            if (param.ExcludeReplies) request.AddParameter("exclude_replies", "true");
-            if (param.Local) request.AddParameter("local", "true");
-            if (param.HasId) request.AddParameter("id", param.Id);
-            if (param.HasQuery) request.AddParameter("q", param.Query);
-            if (param.HasUri) request.AddParameter("uri", param.Uri);
-            if (param.HasStatus) request.AddParameter("status", param.Status);
-            if (param.HasInReplyToId) request.AddParameter("in_reply_to_id", param.InReplyToId);
-            if (param.HasMediaIds)
-            {
-                foreach (var id in param.MediaIds)
-                {
-                    request.AddParameter("media_ids[]", id);
-                }
-            }
-            if (param.Sensitive) request.AddParameter("sensitive", "true");
-            if (param.HasSpoilerText) request.AddParameter("spoiler_text", param.SpoilerText);
-            if (param.HasVisibility) request.AddParameter("visibility", StatusVisibilityConverter.GetVisibility(param.Visibility));
-
-            var response = client.Execute(request);
-            var content = response.Result.Content;
-            return JsonConvert.DeserializeObject<T>(content);
-        }
-
-        private class RestParameters
-        {
-            public string Route { get; set; }
-            public Method Type { get; set; }
-
-            public string AccessToken { get; set; }
-            public bool HasAccessToken { get { return !string.IsNullOrWhiteSpace(AccessToken); } }
-
-            public int Limit { get; set; } = -1;
-            public bool HasLimit { get { return Limit != -1; } }
-
-            public bool OnlyMedia { get; set; }
-            public bool ExcludeReplies { get; set; }
-            public bool Local { get; set; }
-
-            public int Id { get; set; } = -1;
-            public bool HasId { get { return Id != -1; } }
-
-            public string Query { get; set; }
-            public bool HasQuery { get { return !string.IsNullOrWhiteSpace(Query); } }
-
-            public string Uri { get; set; }
-            public bool HasUri { get { return !string.IsNullOrWhiteSpace(Uri); } }
-
-            public string Status { get; set; }
-            public bool HasStatus { get { return !string.IsNullOrWhiteSpace(Status); } }
-
-            public int InReplyToId { get; set; } = -1;
-            public bool HasInReplyToId { get { return InReplyToId != -1; } }
-
-            public int[] MediaIds { get; set; }
-            public bool HasMediaIds { get { return MediaIds != null && MediaIds.Any(); } }
-
-            public bool Sensitive { get; set; }
-
-            public string SpoilerText { get; set; }
-            public bool HasSpoilerText { get { return !string.IsNullOrWhiteSpace(SpoilerText); } }
-
-            public StatusVisibilityEnum Visibility { get; set; } = StatusVisibilityEnum.Unknow;
-            public bool HasVisibility { get { return Visibility != StatusVisibilityEnum.Unknow; } }
-        }
+        //    public StatusVisibilityEnum Visibility { get; set; } = StatusVisibilityEnum.Unknow;
+        //    public bool HasVisibility { get { return Visibility != StatusVisibilityEnum.Unknow; } }
+        //}
     }
 }

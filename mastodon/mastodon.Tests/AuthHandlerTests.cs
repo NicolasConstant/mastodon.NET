@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Threading.Tasks;
 using mastodon.Enums;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,10 +17,12 @@ namespace mastodon.Tests
         }
 
         [TestMethod]
-        public void GetToken()
+        public async Task GetToken()
         {
-            var authHandler = new AuthHandler(Settings.InstanceUrl);
-            var tokenInfo = authHandler.GetTokenInfo(Settings.ClientId, Settings.ClientSecret, Settings.UserLogin, Settings.UserPassword, AppScopeEnum.Read);
+            var authHandler = new AuthHandler(Settings.InstanceName);
+            var tokenInfo = await authHandler.GetTokenInfoAsync(Settings.ClientId, Settings.ClientSecret, Settings.UserEmail, Settings.UserPassword, AppScopeEnum.Read);
+            Assert.IsNotNull(tokenInfo);
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(tokenInfo.access_token));
         }
     }
 }

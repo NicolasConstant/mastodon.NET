@@ -5,7 +5,7 @@ namespace mastodon.Models
 {
     public class Account
     {
-        public int id { get; set; }
+        public string id { get; set; }
         public string username { get; set; }
         public string acct { get; set; }
         public string display_name { get; set; }

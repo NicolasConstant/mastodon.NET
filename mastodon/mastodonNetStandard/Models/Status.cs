@@ -6,8 +6,8 @@ namespace mastodon.Models
     {
         public string id { get; set; }
         public DateTime created_at { get; set; }
-        public int? in_reply_to_id { get; set; }
-        public int? in_reply_to_account_id { get; set; }
+        public string in_reply_to_id { get; set; }
+        public string in_reply_to_account_id { get; set; }
         public bool? sensitive { get; set; }
         public string spoiler_text { get; set; }
         public string visibility { get; set; }
