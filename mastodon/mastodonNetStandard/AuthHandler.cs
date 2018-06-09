@@ -21,29 +21,18 @@ namespace mastodon
         }
         #endregion
 
-        public async Task<TokenInfo> GetTokenInfoAsync(string clientId, string clientSecret, string userLogin, string userPassword, AppScopeEnum scope)
+        public async Task<TokenInfo> GetTokenInfoAsync(string clientId, string clientSecret, string userEmail, string userPassword, AppScopeEnum scope)
         {
             var parameters = new List<KeyValuePair<string, string>>();
             parameters.Add(new KeyValuePair<string, string>("client_id", clientId));
             parameters.Add(new KeyValuePair<string, string>("client_secret", clientSecret));
             parameters.Add(new KeyValuePair<string, string>("grant_type", "password"));
-            parameters.Add(new KeyValuePair<string, string>("username", userLogin));
+            parameters.Add(new KeyValuePair<string, string>("username", userEmail));
             parameters.Add(new KeyValuePair<string, string>("password", userPassword));
             parameters.Add(new KeyValuePair<string, string>("scope", AppScopesConverter.GetScopes(scope)));
-
-
-            //var client = new RestClient(_url);
-            //var request = new RestRequest(ApiRoutes.GetToken, Method.POST);
-            //request.AddParameter("client_id", clientId);
-            //request.AddParameter("client_secret", clientSecret);
-            //request.AddParameter("grant_type", "password");
-            //request.AddParameter("username", userLogin);
-            //request.AddParameter("password", userPassword);
-            //request.AddParameter("scope", AppScopesConverter.GetScopes(scope));
-            //request.AddHeader("Content-Type", "multipart/form-data");
-
+            
             var formUrlEncodedContent = new FormUrlEncodedContent(parameters);
-            var url = _instanceUrl + ApiRoutes.CreateApp;
+            var url = _instanceUrl + ApiRoutes.GetToken;
             var response = await _httpClient.PostAsync(url, formUrlEncodedContent);
 
             var content = await response.Content.ReadAsStringAsync();

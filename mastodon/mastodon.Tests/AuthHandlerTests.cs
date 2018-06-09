@@ -20,7 +20,9 @@ namespace mastodon.Tests
         public async Task GetToken()
         {
             var authHandler = new AuthHandler(Settings.InstanceName);
-            var tokenInfo = await authHandler.GetTokenInfoAsync(Settings.ClientId, Settings.ClientSecret, Settings.UserLogin, Settings.UserPassword, AppScopeEnum.Read);
+            var tokenInfo = await authHandler.GetTokenInfoAsync(Settings.ClientId, Settings.ClientSecret, Settings.UserEmail, Settings.UserPassword, AppScopeEnum.Read);
+            Assert.IsNotNull(tokenInfo);
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(tokenInfo.access_token));
         }
     }
 }

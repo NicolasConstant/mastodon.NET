@@ -30,18 +30,11 @@ namespace mastodon
             parameters.Add(new KeyValuePair<string, string>("redirect_uris", redirectUris));
             parameters.Add(new KeyValuePair<string, string>("scopes", AppScopesConverter.GetScopes(scopes)));
             parameters.Add(new KeyValuePair<string, string>("website", website));
-
-            //request.AddParameter("client_name", clientName);
-            //request.AddParameter("redirect_uris", redirectUris);
-            //request.AddParameter("scopes", AppScopesConverter.GetScopes(scopes));
-            //request.AddParameter("website", website);
-            //request.AddHeader("Content-Type", "multipart/form-data");
-
+            
             var formUrlEncodedContent = new FormUrlEncodedContent(parameters);
             var url = _instanceUrl + ApiRoutes.CreateApp;
             var response = await _httpClient.PostAsync(url, formUrlEncodedContent);
 
-            //var response = client.Execute(request);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<AppInfo>(content);
         }
