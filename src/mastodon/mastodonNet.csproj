@@ -10,7 +10,7 @@
     <PackageProjectUrl>https://github.com/NicolasConstant/mastodon.NET</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/NicolasConstant/mastodon.NET/master/logo.png</PackageIconUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Correction of the wrong sensitivity in new statuses' media attachements</PackageReleaseNotes>
+    <PackageReleaseNotes>Correction of the wrong sensitivity in new statuses media attachements</PackageReleaseNotes>
     <PackageLicenseUrl>https://github.com/NicolasConstant/mastodon.NET/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>mastodon api</PackageTags>
     <RootNamespace>Mastodon</RootNamespace>
