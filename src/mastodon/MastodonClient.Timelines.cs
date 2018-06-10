@@ -50,7 +50,7 @@ namespace mastodon
         {
             var content = new List<KeyValuePair<string, string>>();
             content.Add(new KeyValuePair<string, string>("status", status));
-            content.Add(new KeyValuePair<string, string>("sensitive", sensitive.ToString()));
+            content.Add(new KeyValuePair<string, string>("sensitive", sensitive.ToString().ToLowerInvariant()));
             content.Add(new KeyValuePair<string, string>("visibility", StatusVisibilityConverter.GetVisibility(visibility)));
 
             if (inReplyToId != -1) content.Add(new KeyValuePair<string, string>("in_reply_to_id", inReplyToId.ToString()));
